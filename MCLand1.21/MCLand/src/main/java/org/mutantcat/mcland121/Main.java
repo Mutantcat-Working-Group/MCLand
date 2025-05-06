@@ -10,7 +10,7 @@ import org.mutantcat.mcland121.timer.entity.EntityClean;
 public class Main extends JavaPlugin {
     @Override
     public void onEnable() {
-        getLogger().info("Mutantcat Land 121 插件已启用!");
+        getLogger().info("MCLand 121 插件已启用!");
         // 注册事件
         getServer().getPluginManager().registerEvents(new PlayerJoinedEvent(), this);
         getServer().getPluginManager().registerEvents(new NoDropOnDeathEvent(), this);
