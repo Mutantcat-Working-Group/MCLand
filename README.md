@@ -19,5 +19,5 @@
 
 - MC从1.19版本开始（包括服务器）已不再支持Java8至少要用Java17运行
 - 这里可以下载到Java的历史版本https://jdk.java.net/archive/
-- 新版仓库地址
+- 新版仓库地址https://github.com/Mutantcat-Working-Group/MCLand
 
