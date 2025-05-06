@@ -15,6 +15,7 @@
       <element id="library" level="project" name="Maven: org.spigotmc:spigot-api:1.21-R0.1-SNAPSHOT" />
       <element id="library" level="project" name="Maven: org.yaml:snakeyaml:2.2" />
       <element id="module-output" name="mcland121" />
+      <element id="dir-copy" path="$PROJECT_DIR$/src" />
     </root>
   </artifact>
 </component>
