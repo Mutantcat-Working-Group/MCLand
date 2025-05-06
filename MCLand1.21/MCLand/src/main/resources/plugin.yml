@@ -1,4 +1,4 @@
 name: MCLand
+version: 1.0
 main: org.mutantcat.mcland121.Main
-version: 1.21
 api-version: 1.21
