@@ -1,17 +1,16 @@
-package org.mutantcat.mcland110;
+package org.mutantcat.mcland121;
 
-import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.mutantcat.mcland110.event.block.SpawnProtectionListener;
-import org.mutantcat.mcland110.event.player.NoDropOnDeathEvent;
-import org.mutantcat.mcland110.event.player.PlayerJoinedEvent;
-import org.mutantcat.mcland110.timer.entity.AnimalClean;
-import org.mutantcat.mcland110.timer.entity.EntityClean;
+import org.mutantcat.mcland121.event.block.SpawnProtectionListener;
+import org.mutantcat.mcland121.event.player.NoDropOnDeathEvent;
+import org.mutantcat.mcland121.event.player.PlayerJoinedEvent;
+import org.mutantcat.mcland121.timer.entity.AnimalClean;
+import org.mutantcat.mcland121.timer.entity.EntityClean;
 
 public class Main extends JavaPlugin {
     @Override
     public void onEnable() {
-        getLogger().info("Mutantcat Land 110 插件已启用!");
+        getLogger().info("Mutantcat Land 121 插件已启用!");
         // 注册事件
         getServer().getPluginManager().registerEvents(new PlayerJoinedEvent(), this);
         getServer().getPluginManager().registerEvents(new NoDropOnDeathEvent(), this);

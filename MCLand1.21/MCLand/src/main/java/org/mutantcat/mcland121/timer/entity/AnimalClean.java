@@ -1,16 +1,18 @@
-package org.mutantcat.mcland110.timer.entity;
+package org.mutantcat.mcland121.timer.entity;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 /**
  * Author: tyza66
- * Date: 2024/4/21 18:25
+ * Date: 2024/4/21 19:01
  * Github: https://github.com/tyza66
  **/
 
-public class EntityClean extends BukkitRunnable {
+public class AnimalClean extends BukkitRunnable {
     private final int countdownTime = 5; // 倒计时时间（秒）
     private int timeLeft = countdownTime;
 
@@ -19,7 +21,8 @@ public class EntityClean extends BukkitRunnable {
         for (; timeLeft > 0; timeLeft--) {
             // 倒计时提示
             for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-                player.sendMessage("§c注意：全世界的掉落物将在 " + timeLeft + " 秒后被清除！");
+                player.sendMessage("§c注意：全世界生物将在 " + timeLeft + " 秒后被清除！");
+
             }
             try {
                 Thread.sleep(1000);
@@ -27,11 +30,18 @@ public class EntityClean extends BukkitRunnable {
                 e.printStackTrace();
             }
         }
-        // 倒计时结束，清除掉落物并重置倒计时
+        // 遍历所有世界
         Bukkit.getServer().getWorlds().forEach(world -> {
-            world.getEntitiesByClasses(org.bukkit.entity.Item.class).forEach(org.bukkit.entity.Entity::remove);
+            // 遍历世界中的所有实体
+            for (Entity entity : world.getEntities()) {
+                // 检查实体是否是生物（不包括玩家）
+                if (entity.getType() != EntityType.PLAYER) {
+                    // 移除实体
+                    entity.remove();
+                }
+            }
         });
-        Bukkit.getServer().broadcastMessage("§a掉落物已被清除。");
+        Bukkit.getServer().broadcastMessage("§a生物已被清除。");
         timeLeft = countdownTime;
     }
 }
