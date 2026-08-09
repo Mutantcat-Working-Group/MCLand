@@ -2,3 +2,5 @@ name: MCLand
 version: 1.21.20250506
 main: org.mutantcat.mcland121.Main
 api-version: 1.21
+author: Mutantcat Working Group
+description: 方块猫窝公益服插件（主城保护/死亡不掉落/定期清理）

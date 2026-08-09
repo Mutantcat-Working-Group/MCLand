@@ -1,6 +1,5 @@
 package org.mutantcat.mcland121.event.player;
 
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -13,11 +12,16 @@ import org.bukkit.event.player.PlayerJoinEvent;
 
 // 玩家加入时有提示
 public class PlayerJoinedEvent implements Listener {
+    private final String welcomeMessage; // 欢迎语（可配置，空则不发送）
+
+    public PlayerJoinedEvent(String welcomeMessage) {
+        this.welcomeMessage = welcomeMessage;
+    }
+
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        // 获取玩家对象
-        Player player = event.getPlayer();
-        // 发送欢迎信息
-        player.sendMessage("欢迎来到Mutantcat Land！");
+        if (welcomeMessage != null && !welcomeMessage.isEmpty()) {
+            event.getPlayer().sendMessage(welcomeMessage);
+        }
     }
 }

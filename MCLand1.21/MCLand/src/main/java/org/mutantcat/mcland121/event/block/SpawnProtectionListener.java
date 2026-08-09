@@ -1,10 +1,10 @@
 package org.mutantcat.mcland121.event.block;
 
-import org.bukkit.event.Listener;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 /**
@@ -17,11 +17,13 @@ public class SpawnProtectionListener implements Listener {
     private final World spawnWorld; // 出生点所在的世界
     private final Location spawnLocation; // 出生点的位置
     private final int protectionRadius; // 保护区域的半径
+    private final long radiusSquared;   // 半径平方，避免每次计算开方
 
     public SpawnProtectionListener(World world, int radius) {
         this.spawnWorld = world;
         this.spawnLocation = world.getSpawnLocation();
-        this.protectionRadius = radius;
+        this.protectionRadius = Math.max(0, radius);
+        this.radiusSquared = (long) this.protectionRadius * this.protectionRadius;
     }
 
     @EventHandler
@@ -43,7 +45,16 @@ public class SpawnProtectionListener implements Listener {
     }
 
     private boolean isInProtectedArea(Location location) {
-        // 检查位置是否在保护区域内
-        return location.getWorld().equals(spawnWorld) && location.distance(spawnLocation) <= protectionRadius;
+        // 空位置或非保护世界直接返回 false，避免 NPE
+        if (location == null || location.getWorld() == null || spawnWorld == null) {
+            return false;
+        }
+        if (!location.getWorld().equals(spawnWorld)) {
+            return false;
+        }
+        // 按水平距离（忽略 Y 轴）判断，高空/地下的方块不再被误判为受保护
+        double dx = location.getX() - spawnLocation.getX();
+        double dz = location.getZ() - spawnLocation.getZ();
+        return dx * dx + dz * dz <= radiusSquared;
     }
 }

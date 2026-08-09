@@ -1,7 +1,10 @@
 package org.mutantcat.mcland121.timer.entity;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 /**
@@ -11,27 +14,37 @@ import org.bukkit.scheduler.BukkitRunnable;
  **/
 
 public class EntityClean extends BukkitRunnable {
-    private final int countdownTime = 5; // 倒计时时间（秒）
-    private int timeLeft = countdownTime;
+    private final JavaPlugin plugin; // 插件实例，用于调度倒计时任务
+    private final int countdownTime; // 倒计时时间（秒）
+
+    public EntityClean(JavaPlugin plugin, int countdownSeconds) {
+        this.plugin = plugin;
+        // 至少 1 秒，避免配置为 0 或负数时出现异常倒计时
+        this.countdownTime = Math.max(1, countdownSeconds);
+    }
 
     @Override
     public void run() {
-        for (; timeLeft > 0; timeLeft--) {
-            // 倒计时提示
-            for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-                player.sendMessage("§c注意：全世界的掉落物将在 " + timeLeft + " 秒后被清除！");
-            }
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        // 用主线程定时任务分次发出倒计时提示，避免在主线程 sleep 阻塞服务器
+        for (int i = countdownTime; i > 0; i--) {
+            final int secondsLeft = i;
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    for (Player player : Bukkit.getOnlinePlayers()) {
+                        player.sendMessage("§c注意：全世界的掉落物将在 " + secondsLeft + " 秒后被清除！");
+                    }
+                }
+            }.runTaskLater(plugin, (countdownTime - secondsLeft) * 20L);
         }
-        // 倒计时结束，清除掉落物并重置倒计时
-        Bukkit.getServer().getWorlds().forEach(world -> {
-            world.getEntitiesByClasses(org.bukkit.entity.Item.class).forEach(org.bukkit.entity.Entity::remove);
-        });
-        Bukkit.getServer().broadcastMessage("§a掉落物已被清除。");
-        timeLeft = countdownTime;
+        // 倒计时结束后清除掉落物
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                Bukkit.getWorlds().forEach(world ->
+                        world.getEntitiesByClasses(Item.class).forEach(Entity::remove));
+                Bukkit.broadcastMessage("§a掉落物已被清除。");
+            }
+        }.runTaskLater(plugin, countdownTime * 20L);
     }
 }

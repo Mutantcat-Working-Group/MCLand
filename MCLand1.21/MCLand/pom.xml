@@ -33,8 +33,8 @@
     </repositories>
 
     <properties>
-        <maven.compiler.source>22</maven.compiler.source>
-        <maven.compiler.target>22</maven.compiler.target>
+        <!-- MC 1.21 服务器要求 Java 21+，使用 release 同时约束 source/target，避免 JDK 版本不匹配 -->
+        <maven.compiler.release>21</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 

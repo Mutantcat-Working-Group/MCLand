@@ -1,0 +1,2 @@
+# 统一 LF 行尾，避免跨平台行尾污染 git 历史
+* text=auto eol=lf
