@@ -6,7 +6,7 @@
 
     <groupId>org.mutantcat</groupId>
     <artifactId>mcland110</artifactId>
-    <version>1.10.20260810</version>
+    <version>1.0.20260920</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
