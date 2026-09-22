@@ -35,6 +35,8 @@ jobs:
           tar -czf "dist/MCLand-${VERSION}.tar.gz" -C dist "MCLand-${VERSION}"
           cd dist
           sha256sum "MCLand-${VERSION}.tar.gz" "MCLand-${VERSION}"/* > SHA256SUMS
+          md5sum "MCLand-${VERSION}.tar.gz" "MCLand-${VERSION}"/* > checksums-md5.txt
+          sha1sum "MCLand-${VERSION}.tar.gz" "MCLand-${VERSION}"/* > checksums-sha1.txt
 
       - name: Create or update release
         env:
@@ -45,10 +47,10 @@ jobs:
           PACKAGE_BASENAME="MCLand-${TAG#v}"
           if gh release view "${TAG}" --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
             gh release upload "${TAG}" \
-              "dist/${PACKAGE_BASENAME}.tar.gz" "dist/${PACKAGE_BASENAME}"/* "dist/SHA256SUMS" \
+              "dist/${PACKAGE_BASENAME}.tar.gz" "dist/${PACKAGE_BASENAME}"/* "dist/SHA256SUMS" "dist/checksums-md5.txt" "dist/checksums-sha1.txt" \
               --repo "${GITHUB_REPOSITORY}" --clobber
           else
             gh release create "${TAG}" \
-              "dist/${PACKAGE_BASENAME}.tar.gz" "dist/${PACKAGE_BASENAME}"/* "dist/SHA256SUMS" \
+              "dist/${PACKAGE_BASENAME}.tar.gz" "dist/${PACKAGE_BASENAME}"/* "dist/SHA256SUMS" "dist/checksums-md5.txt" "dist/checksums-sha1.txt" \
               --repo "${GITHUB_REPOSITORY}" --title "${TAG}" --generate-notes
           fi
