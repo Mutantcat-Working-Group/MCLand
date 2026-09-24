@@ -1,3 +1,5 @@
+// MCLand — 由异猫工作群（mutantcat.org）发行
+// GitHub: https://github.com/Mutantcat-Working-Group
 package org.mutantcat.mcland110;
 
 import org.bukkit.World;
@@ -20,6 +22,8 @@ public class Main extends JavaPlugin {
     public void onEnable() {
         saveDefaultConfig();
         getLogger().info("Mutantcat Land 110 插件已启用!");
+        // 发行方信息：由异猫工作群（mutantcat.org）发行。
+        getLogger().info("发行方：异猫工作群（mutantcat.org） · https://github.com/Mutantcat-Working-Group");
 
         // 注册事件
         getServer().getPluginManager().registerEvents(
