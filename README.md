@@ -3,6 +3,10 @@
 <h2>MCLand</h2>
 </div>
 
+[项目仓库](https://github.com/Mutantcat-Working-Group/MCLand) · [下载地址](https://github.com/Mutantcat-Working-Group/MCLand/releases) · [问题反馈](https://github.com/Mutantcat-Working-Group/MCLand/issues)
+
+- **发行方** 由异猫工作群（mutantcat.org）发行，GitHub: https://github.com/Mutantcat-Working-Group
+
 ### 一、说明
 
 - 使用在公益服“方块猫窝”上的脚本
@@ -20,14 +24,6 @@
 | `main` | 1.21 | `1.0.20260920` | 活跃开发 |
 | `mc-1.10` | 1.10 | `1.10.20260810` | 已终结 |
 
-### 三、版本号规则
-
-代码版本号格式为 `<MC主版本>.<发布日期>`，例如 `1.21.20260810` 表示 MC 1.21、发布于 2026-08-10。
-每次发版时更新日期后缀，便于区分同一 MC 版本下的不同发布。版本号体现在：
-
-- `pom.xml` 的 `<version>`
-- `src/main/resources/plugin.yml` 的 `version`
-
 ### 三、注意事项
 
 - MC从1.19版本开始（包括服务器）已不再支持Java8至少要用Java17运行
@@ -41,3 +37,17 @@
 - 用户登录
 - 定期清理掉落物
 - 定期清理生物
+
+### 五、版本号规则
+
+代码版本号格式为 `<MC主版本>.<发布日期>`，例如 `1.21.20260810` 表示 MC 1.21、发布于 2026-08-10。
+每次发版时更新日期后缀，便于区分同一 MC 版本下的不同发布。版本号体现在：
+
+- `pom.xml` 的 `<version>`
+- `src/main/resources/plugin.yml` 的 `version`
+
+### 六、开源协议与致谢
+
+本项目基于 Apache-2.0 协议开源，许可证见 [LICENSE.txt](LICENSE.txt)。
+
+本项目是 [tyza66/MCLand](https://github.com/tyza66/MCLand) 的 Fork，感谢原仓库及其作者的优秀开源工作，本仓库在其基础上继续维护与改进。
