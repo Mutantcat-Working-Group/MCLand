@@ -3,11 +3,14 @@
 <h2>MCLand</h2>
 </div>
 
+[项目仓库](https://github.com/Mutantcat-Working-Group/MCLand) · [下载地址](https://github.com/Mutantcat-Working-Group/MCLand/releases) · [问题反馈](https://github.com/Mutantcat-Working-Group/MCLand/issues)
+
 ### 一、产品概述
 
 - 公益服「方块猫窝」的服务器脚本，为了让用户玩得放心而整体开源。
 - 基于 Spigot 系列插件体系，可参与本项目开发迭代，也可直接用到自己的服务器。
 - 版本号三码合一，每个终结版本提供一键启动包，下载即可自主开服。
+- **发行方** 由异猫工作群（mutantcat.org）发行，GitHub: https://github.com/Mutantcat-Working-Group
 
 核心价值：服主拿到手的不只是插件，还有一套能直接跑起来的开服方案。
 
@@ -43,6 +46,12 @@
 - MCLand 1.10：已终结
 - MCLand 1.21：进行中（当前维护版本）
 
-### 六、开源协议与致谢
+### 六、开源协议
 
-本项目基于 Apache-2.0 协议开源。本项目是 [tyza66/MCLand](https://github.com/tyza66/MCLand) 的 Fork，感谢原仓库及其作者的优秀开源工作，本仓库在其基础上继续维护与改进。
+本项目基于 Apache-2.0 协议开源，许可证见 [LICENSE.txt](LICENSE.txt)。
+
+---
+
+## 致谢
+
+本项目是 [tyza66/MCLand](https://github.com/tyza66/MCLand) 的 Fork，感谢原仓库及其作者的优秀开源工作，本仓库在其基础上继续维护与改进。
