@@ -1,15 +1,15 @@
 // MCLand — 由异猫工作群（mutantcat.org）发行
 // GitHub: https://github.com/Mutantcat-Working-Group
-package org.mutantcat.mcland110;
+package org.mutantcat.mcland263;
 
 import org.bukkit.World;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
-import org.mutantcat.mcland110.event.block.SpawnProtectionListener;
-import org.mutantcat.mcland110.event.player.NoDropOnDeathEvent;
-import org.mutantcat.mcland110.event.player.PlayerJoinedEvent;
-import org.mutantcat.mcland110.timer.entity.AnimalClean;
-import org.mutantcat.mcland110.timer.entity.EntityClean;
+import org.mutantcat.mcland263.event.block.SpawnProtectionListener;
+import org.mutantcat.mcland263.event.player.NoDropOnDeathEvent;
+import org.mutantcat.mcland263.event.player.PlayerJoinedEvent;
+import org.mutantcat.mcland263.timer.entity.AnimalClean;
+import org.mutantcat.mcland263.timer.entity.EntityClean;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +21,7 @@ public class Main extends JavaPlugin {
     @Override
     public void onEnable() {
         saveDefaultConfig();
-        getLogger().info("Mutantcat Land 110 插件已启用!");
+        getLogger().info("Mutantcat Land 26.3 插件已启用!");
         // 发行方信息：由异猫工作群（mutantcat.org）发行。
         getLogger().info("发行方：异猫工作群（mutantcat.org） · https://github.com/Mutantcat-Working-Group");
 
@@ -60,6 +60,6 @@ public class Main extends JavaPlugin {
             task.cancel();
         }
         tasks.clear();
-        getLogger().info("Mutantcat Land 110 服务器正在关闭!");
+        getLogger().info("Mutantcat Land 26.3 服务器正在关闭!");
     }
 }

@@ -1,5 +1,6 @@
 name: MCLand
-version: 1.0.20260920
-main: org.mutantcat.mcland110.Main
+version: 26.3.20260926
+main: org.mutantcat.mcland263.Main
+api-version: 26.3
 author: Mutantcat Working Group
 description: 方块猫窝公益服插件（主城保护/死亡不掉落/定期清理）

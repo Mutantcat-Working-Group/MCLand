@@ -5,36 +5,24 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.mutantcat</groupId>
-    <artifactId>mcland110</artifactId>
-    <version>1.0.20260920</version>
+    <artifactId>mcland263</artifactId>
+    <version>26.3.20260926</version>
 
     <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
+        <!-- 26.3 服务器基于 Java 25，插件按 Java 25 编译 -->
+        <maven.compiler.release>25</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <dependencies>
+        <!-- 26.3 的 Spigot API 来自 server.jar 内置库，已抽取到 lib/spigot-26.3.jar 作为本地依赖 -->
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.10-R0.1-SNAPSHOT</version>
-            <scope>provided</scope>
-            <exclusions>
-                <!-- bungeecord-chat 1.9-SNAPSHOT 已从公共仓库清理，且本插件未使用其类型 -->
-                <exclusion>
-                    <groupId>net.md-5</groupId>
-                    <artifactId>bungeecord-chat</artifactId>
-                </exclusion>
-            </exclusions>
+            <version>26.3-R0.1-SNAPSHOT</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/spigot-26.3.jar</systemPath>
         </dependency>
     </dependencies>
-
-    <repositories>
-        <repository>
-            <id>spigotmc-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
-        </repository>
-    </repositories>
 
 </project>

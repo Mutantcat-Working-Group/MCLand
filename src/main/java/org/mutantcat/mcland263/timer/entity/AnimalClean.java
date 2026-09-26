@@ -1,4 +1,4 @@
-package org.mutantcat.mcland110.timer.entity;
+package org.mutantcat.mcland263.timer.entity;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
