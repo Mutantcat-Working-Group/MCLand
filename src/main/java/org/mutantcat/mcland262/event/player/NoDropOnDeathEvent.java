@@ -1,4 +1,4 @@
-package org.mutantcat.mcland263.event.player;
+package org.mutantcat.mcland262.event.player;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

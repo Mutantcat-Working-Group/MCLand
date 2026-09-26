@@ -23,13 +23,14 @@
 |---|---|---|---|
 | `main` | 1.21 | `1.0.20260920` | 活跃开发 |
 | `mc-1.10` | 1.10 | `1.10.20260810` | 已终结 |
-| `mc-26.3` | 26.3 | `1.3.20260928` | 开发中 |
+| `mc-26.3` | 26.3 | `26.3.20260929` | 开发中 |
+| `mc-26.2` | 26.2 | `26.2.20260926` | 开发中 |
 
 ### 三、注意事项
 
 - MC从1.19版本开始（包括服务器）已不再支持Java8至少要用Java17运行
-- `mc-26.3` 服务器与插件均基于 Java 25
-- `mc-26.3` 分支的 Spigot API 来自 `server.jar` 内置库（`META-INF/libraries/spigot-api-26.3-R0.1-SNAPSHOT.jar`），已抽取至 `lib/spigot-26.3.jar` 作为本地依赖，构建前无需连接 Spigot 仓库
+- `mc-26.3`、`mc-26.2` 服务器与插件均基于 Java 25，插件按 Java 25 编译
+- `mc-26.3`、`mc-26.2` 分支的 Spigot API 来自 `server.jar` 内置库（`META-INF/libraries/spigot-api-<MC版本>-R0.1-SNAPSHOT.jar`），已分别抽取至 `lib/spigot-26.3.jar`、`lib/spigot-26.2.jar` 作为本地依赖，构建前无需连接 Spigot 仓库
 - 注册/登录账号保存在 `plugins/MCLand/MCLand/user/user.db`，按玩家 UUID 建号；Floodgate 默认给基岩版用户名加 `.` 前缀，服内实际名称带前缀，不影响注册登录，修改前缀也不会丢账号
 - 这里可以下载到Java的历史版本https://jdk.java.net/archive/
 - 新版仓库地址https://github.com/Mutantcat-Working-Group/MCLand
@@ -47,11 +48,12 @@
 
 ### 五、版本号规则
 
-代码版本号格式为 `<主版本>.<发布日期>`，例如 `1.3.20260928` 表示主版本 1.3、发布于 2026-09-28。
-每次发版时将日期后缀往下（更晚的日期）递增，便于区分同一 MC 版本下的不同发布。版本号体现在：
+代码版本号格式为 `<MC 版本>.<发布日期>`，例如 `26.2.20260926` 表示适配 MC 26.2、发布于 2026-09-26。
+每次发版时将日期后缀往后（更晚的日期）递增，不回退，便于区分同一 MC 版本下的不同发布。版本号体现在：
 
 - `pom.xml` 的 `<version>`
 - `src/main/resources/plugin.yml` 的 `version`
+- 发布 tag 形如 `v26.2.20260926`
 
 ### 六、开源协议与致谢
 

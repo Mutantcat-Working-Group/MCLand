@@ -1,4 +1,4 @@
-package org.mutantcat.mcland263.teleport;
+package org.mutantcat.mcland262.teleport;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

@@ -1,10 +1,10 @@
-package org.mutantcat.mcland263.timer.entity;
+package org.mutantcat.mcland262.timer.entity;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.mutantcat.mcland263.timer.CountdownCleanTask;
+import org.mutantcat.mcland262.timer.CountdownCleanTask;
 
 /**
  * Author: tyza66

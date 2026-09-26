@@ -1,4 +1,4 @@
-package org.mutantcat.mcland263.help;
+package org.mutantcat.mcland262.help;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

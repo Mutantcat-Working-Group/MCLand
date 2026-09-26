@@ -5,23 +5,23 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.mutantcat</groupId>
-    <artifactId>mcland263</artifactId>
-    <version>1.3.20260928</version>
+    <artifactId>mcland262</artifactId>
+    <version>26.2.20260926</version>
 
     <properties>
-        <!-- 26.3 服务器基于 Java 25，插件按 Java 25 编译 -->
+        <!-- 26.2 服务器基于 Java 25，插件按 Java 25 编译 -->
         <maven.compiler.release>25</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <dependencies>
-        <!-- 26.3 的 Spigot API 来自 server.jar 内置库，已抽取到 lib/spigot-26.3.jar 作为本地依赖 -->
+        <!-- 26.2 的 Spigot API 来自 server.jar 内置库，已抽取到 lib/spigot-26.2.jar 作为本地依赖 -->
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>26.3-R0.1-SNAPSHOT</version>
+            <version>26.2-R0.1-SNAPSHOT</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/lib/spigot-26.3.jar</systemPath>
+            <systemPath>${project.basedir}/lib/spigot-26.2.jar</systemPath>
         </dependency>
         <!-- 注册/登录功能使用 SQLite 用户库 -->
         <dependency>

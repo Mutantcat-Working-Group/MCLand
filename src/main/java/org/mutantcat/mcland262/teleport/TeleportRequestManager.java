@@ -1,10 +1,10 @@
-package org.mutantcat.mcland263.teleport;
+package org.mutantcat.mcland262.teleport;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
-import org.mutantcat.mcland263.user.AuthManager;
+import org.mutantcat.mcland262.user.AuthManager;
 
 import java.util.HashMap;
 import java.util.Map;

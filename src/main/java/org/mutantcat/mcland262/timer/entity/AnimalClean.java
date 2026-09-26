@@ -1,4 +1,4 @@
-package org.mutantcat.mcland263.timer.entity;
+package org.mutantcat.mcland262.timer.entity;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -9,7 +9,7 @@ import org.bukkit.entity.Animals;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.mutantcat.mcland263.timer.CountdownCleanTask;
+import org.mutantcat.mcland262.timer.CountdownCleanTask;
 
 import java.util.HashMap;
 import java.util.Map;

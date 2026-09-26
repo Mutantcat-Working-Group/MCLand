@@ -1,4 +1,4 @@
-package org.mutantcat.mcland263.user;
+package org.mutantcat.mcland262.user;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

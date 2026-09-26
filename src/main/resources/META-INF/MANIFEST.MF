@@ -1,2 +1,2 @@
 Manifest-Version: 1.0
-Main-Class: org.mutantcat.mcland263.Main
+Main-Class: org.mutantcat.mcland262.Main

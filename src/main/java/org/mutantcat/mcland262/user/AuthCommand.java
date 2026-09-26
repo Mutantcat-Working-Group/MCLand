@@ -1,4 +1,4 @@
-package org.mutantcat.mcland263.user;
+package org.mutantcat.mcland262.user;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

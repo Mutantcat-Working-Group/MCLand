@@ -1,4 +1,4 @@
-package org.mutantcat.mcland263.event.block;
+package org.mutantcat.mcland262.event.block;
 
 import org.bukkit.Location;
 import org.bukkit.World;

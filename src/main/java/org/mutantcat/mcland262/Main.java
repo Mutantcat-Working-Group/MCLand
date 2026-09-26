@@ -1,24 +1,24 @@
 // MCLand — 由异猫工作群（mutantcat.org）发行
 // GitHub: https://github.com/Mutantcat-Working-Group
-package org.mutantcat.mcland263;
+package org.mutantcat.mcland262;
 
 import org.bukkit.World;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
-import org.mutantcat.mcland263.event.block.SpawnProtectionListener;
-import org.mutantcat.mcland263.event.player.NoDropOnDeathEvent;
-import org.mutantcat.mcland263.event.player.PlayerJoinedEvent;
-import org.mutantcat.mcland263.help.HelpListener;
-import org.mutantcat.mcland263.timer.entity.AnimalClean;
-import org.mutantcat.mcland263.timer.entity.EntityClean;
-import org.mutantcat.mcland263.teleport.AcceptCommand;
-import org.mutantcat.mcland263.teleport.TeleportCommand;
-import org.mutantcat.mcland263.teleport.TeleportListener;
-import org.mutantcat.mcland263.teleport.TeleportRequestManager;
-import org.mutantcat.mcland263.user.AuthCommand;
-import org.mutantcat.mcland263.user.AuthListener;
-import org.mutantcat.mcland263.user.AuthManager;
-import org.mutantcat.mcland263.user.UserDatabase;
+import org.mutantcat.mcland262.event.block.SpawnProtectionListener;
+import org.mutantcat.mcland262.event.player.NoDropOnDeathEvent;
+import org.mutantcat.mcland262.event.player.PlayerJoinedEvent;
+import org.mutantcat.mcland262.help.HelpListener;
+import org.mutantcat.mcland262.timer.entity.AnimalClean;
+import org.mutantcat.mcland262.timer.entity.EntityClean;
+import org.mutantcat.mcland262.teleport.AcceptCommand;
+import org.mutantcat.mcland262.teleport.TeleportCommand;
+import org.mutantcat.mcland262.teleport.TeleportListener;
+import org.mutantcat.mcland262.teleport.TeleportRequestManager;
+import org.mutantcat.mcland262.user.AuthCommand;
+import org.mutantcat.mcland262.user.AuthListener;
+import org.mutantcat.mcland262.user.AuthManager;
+import org.mutantcat.mcland262.user.UserDatabase;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -36,7 +36,7 @@ public class Main extends JavaPlugin {
     @Override
     public void onEnable() {
         saveDefaultConfig();
-        getLogger().info("Mutantcat Land 26.3 插件已启用!");
+        getLogger().info("Mutantcat Land 26.2 插件已启用!");
         // 发行方信息：由异猫工作群（mutantcat.org）发行。
         getLogger().info("发行方：异猫工作群（mutantcat.org） · https://github.com/Mutantcat-Working-Group");
 
@@ -113,6 +113,6 @@ public class Main extends JavaPlugin {
                 getLogger().log(Level.SEVERE, "关闭用户数据库失败", e);
             }
         }
-        getLogger().info("Mutantcat Land 26.3 服务器正在关闭!");
+        getLogger().info("Mutantcat Land 26.2 服务器正在关闭!");
     }
 }

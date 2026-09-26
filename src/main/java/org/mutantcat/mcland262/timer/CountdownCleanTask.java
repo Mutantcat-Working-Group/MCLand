@@ -1,4 +1,4 @@
-package org.mutantcat.mcland263.timer;
+package org.mutantcat.mcland262.timer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
