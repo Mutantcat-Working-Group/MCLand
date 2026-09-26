@@ -14,9 +14,10 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 public class NoDropOnDeathEvent implements Listener {
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
-        // 取消掉落物品和经验
-        event.setKeepInventory(true); // 保留玩家的背包和装备
+        // 死亡不掉落：背包和装备保留，同时清空已经生成的掉落列表，避免地上下落物和背包重复
+        event.setKeepInventory(true);
+        event.getDrops().clear();
         event.setDroppedExp(0); // 设置掉落的经验为0
-        event.setKeepLevel(true); // 保留玩家的等级
+        event.setKeepLevel(true);
     }
 }
