@@ -22,7 +22,7 @@ public class HelpCommand implements CommandExecutor {
         sender.sendMessage(PREFIX + "/accept - 接受收到的传送请求");
         sender.sendMessage(PREFIX + "主城保护 - 保护主城范围内的方块和互动");
         sender.sendMessage(PREFIX + "死亡不掉落 - 死亡时保留背包，不产生掉落物");
-        sender.sendMessage(PREFIX + "掉落物清理 - 每5分钟清理一次，清理前有倒计时提示");
-        sender.sendMessage(PREFIX + "生物清理 - 定期清理非玩家生物");
+        sender.sendMessage(PREFIX + "掉落物清理 - 每15分钟清理一次，清理前有倒计时提示");
+        sender.sendMessage(PREFIX + "生物清理 - 每小时清理一次，清理前有倒计时提示，村民不会被清理");
     }
 }
