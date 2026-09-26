@@ -6,7 +6,7 @@
 
     <groupId>org.mutantcat</groupId>
     <artifactId>mcland263</artifactId>
-    <version>26.3.20260929</version>
+    <version>26.3.20260930</version>
 
     <properties>
         <!-- 26.3 服务器基于 Java 25，插件按 Java 25 编译 -->
