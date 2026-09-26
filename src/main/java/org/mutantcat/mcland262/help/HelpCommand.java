@@ -37,7 +37,7 @@ public class HelpCommand implements CommandExecutor {
         sender.sendMessage(PREFIX + "/accept - 接受收到的传送请求");
         sender.sendMessage(PREFIX + "/money - 查看金币余额");
         sender.sendMessage(PREFIX + "/money give 数量 玩家名 - 转帐金币给他人，对方可不在线");
-        sender.sendMessage(PREFIX + "/request 数量 玩家名 - 向在线玩家索要金币，对方在" + info.tpRequestTimeoutSeconds() + "秒内/accept且余额充足后到账");
+        sender.sendMessage(PREFIX + "/money request 数量 玩家名 - 向在线玩家索要金币，对方在" + info.tpRequestTimeoutSeconds() + "秒内/accept且余额充足后到账");
         sender.sendMessage(PREFIX + "/sell - 查看可出售物品与单价");
         sender.sendMessage(PREFIX + "/sell sum - 计算当前手中物品总价");
         sender.sendMessage(PREFIX + "/sell sure - 卖掉当前手中的物品换取金币，卖出后无法赎回");

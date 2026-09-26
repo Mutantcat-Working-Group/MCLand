@@ -91,9 +91,8 @@ public class Main extends JavaPlugin {
         getCommand("tp").setExecutor(new TeleportCommand(teleportManager));
         getCommand("accept").setExecutor(new AcceptCommand(teleportManager));
 
-        // 金币系统（/money 查余额与转账，/request 索要），与账号库同库，金币跟账号绑定
+        // 金币系统（/money 查余额与转账、/money request 索要），与账号库同库，金币跟账号绑定
         getCommand("money").setExecutor(new MoneyCommand(this, authManager, teleportManager, userDatabase));
-        getCommand("request").setExecutor(new MoneyCommand(this, authManager, teleportManager, userDatabase));
 
         // 交易系统（/sell 查看价目，/sell sum 估价，/sell sure 出售手中物品），卖出金币入账到账号余额
         getCommand("sell").setExecutor(new SellCommand(this, authManager, userDatabase));

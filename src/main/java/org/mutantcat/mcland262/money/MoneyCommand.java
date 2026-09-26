@@ -16,7 +16,7 @@ import java.util.UUID;
 import java.util.logging.Level;
 
 /**
- * 金币命令：/money 查余额，/money give 数量 玩家名 转账，/request 数量 玩家名 向在线玩家索要。
+ * 金币命令：/money 查余额，/money give 数量 玩家名 转账，/money request 数量 玩家名 向在线玩家索要。
  * 金币与账号绑定，读写都落在登录库 users 表的 balance 列。
  */
 public class MoneyCommand implements CommandExecutor {
@@ -46,10 +46,6 @@ public class MoneyCommand implements CommandExecutor {
             handleMoney((Player) sender, args);
             return true;
         }
-        if (name.equals("request")) {
-            handleRequest((Player) sender, args);
-            return true;
-        }
         return false;
     }
 
@@ -74,10 +70,18 @@ public class MoneyCommand implements CommandExecutor {
             giveMoney(player, args[1], args[2]);
             return;
         }
-        player.sendMessage(PREFIX + "未知用法。/money 查看余额；“/money give 数量 玩家名”转帐；“/request 数量 玩家名”向在线玩家索要");
+        if (args[0].equalsIgnoreCase("request")) {
+            if (args.length != 3) {
+                player.sendMessage(PREFIX + "请输入“/money request 数量 玩家名”向在线玩家索要金币，需对方/accept且余额充足");
+                return;
+            }
+            requestMoney(player, args[1], args[2]);
+            return;
+        }
+        player.sendMessage(PREFIX + "未知用法。/money 查看余额；“/money give 数量 玩家名”转帐；“/money request 数量 玩家名”向在线玩家索要");
     }
 
-    private void handleRequest(Player player, String[] args) {
+    private void requestMoney(Player player, String amountArg, String targetArg) {
         if (authManager != null && !authManager.isLoggedIn(player.getUniqueId())) {
             player.sendMessage(PREFIX + "请先登录后使用金币功能");
             return;
@@ -86,13 +90,9 @@ public class MoneyCommand implements CommandExecutor {
             player.sendMessage(PREFIX + "金币系统未启用");
             return;
         }
-        if (args.length != 2) {
-            player.sendMessage(PREFIX + "请输入“/request 数量 玩家名”向在线玩家索要金币，需对方/accept且余额充足");
-            return;
-        }
         long amount;
         try {
-            amount = Long.parseLong(args[0].trim());
+            amount = Long.parseLong(amountArg.trim());
         } catch (NumberFormatException e) {
             player.sendMessage(PREFIX + "金币数量必须为正整数");
             return;
@@ -101,9 +101,9 @@ public class MoneyCommand implements CommandExecutor {
             player.sendMessage(PREFIX + "金币数量必须为正整数");
             return;
         }
-        String targetName = stripAt(args[1]);
+        String targetName = stripAt(targetArg);
         if (targetName.isEmpty()) {
-            player.sendMessage(PREFIX + "请输入对方玩家名，例如“/request 100 @对方名字”");
+            player.sendMessage(PREFIX + "请输入对方玩家名，例如“/money request 100 @对方名字”");
             return;
         }
         if (targetName.equalsIgnoreCase(player.getName())) {
