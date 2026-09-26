@@ -22,4 +22,4 @@ animal-clean:
 
 # ===== 其他 =====
 # 进服欢迎语（留空则不发送）
-welcome-message: "欢迎来到Mutantcat Land！"
+welcome-message: "[MCLand]欢迎来到方块猫窝！"
