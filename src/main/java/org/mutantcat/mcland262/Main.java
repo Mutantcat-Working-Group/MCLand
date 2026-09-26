@@ -13,6 +13,8 @@ import org.mutantcat.mcland262.home.HomeCommand;
 import org.mutantcat.mcland262.home.HomeDatabase;
 import org.mutantcat.mcland262.home.HomeManager;
 import org.mutantcat.mcland262.money.MoneyCommand;
+import org.mutantcat.mcland262.redpacket.RedCommand;
+import org.mutantcat.mcland262.redpacket.RedPacketManager;
 import org.mutantcat.mcland262.spawn.SpawnCommand;
 import org.mutantcat.mcland262.spawn.SpawnGuardTask;
 import org.mutantcat.mcland262.spawn.SpawnRegion;
@@ -43,6 +45,7 @@ public class Main extends JavaPlugin {
     private EntityClean entityClean;
     private AnimalClean animalClean;
     private HomeManager homeManager;
+    private RedPacketManager redPacketManager;
 
     @Override
     public void onEnable() {
@@ -85,6 +88,11 @@ public class Main extends JavaPlugin {
         // 交易系统（/sell 查看价目，/sell sum 估价，/sell sure 出售手中物品），卖出金币入账到账号余额
         getCommand("sell").setExecutor(new SellCommand(this, authManager, userDatabase));
         getLogger().info("交易系统已启用（/sell、/sell sum、/sell sure）");
+
+        // 整点红包：奇数整点发一个 10-50 金币的红包，玩家 /red 每轮随机抢 1-10 金币，入账到账号余额
+        redPacketManager = new RedPacketManager(this, authManager, userDatabase);
+        getCommand("red").setExecutor(new RedCommand(redPacketManager));
+        getLogger().info("整点红包已启用（奇数整点发放，/red 每轮随机抢 1-10 金币，一小时内有效）");
 
         // /help 帮助菜单：由 HelpListener 在命令预处理阶段拦截输出，不注册 /help 命令，避免与服务器内置命令冲突
         getServer().getPluginManager().registerEvents(new HelpListener(), this);
@@ -160,6 +168,9 @@ public class Main extends JavaPlugin {
         }
         if (teleportManager != null) {
             teleportManager.close();
+        }
+        if (redPacketManager != null) {
+            redPacketManager.close();
         }
         if (authManager != null) {
             try {

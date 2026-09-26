@@ -1,5 +1,5 @@
 name: MCLand
-version: 26.2.20261003
+version: 26.2.20261004
 main: org.mutantcat.mcland262.Main
 api-version: 26.2
 author: Mutantcat Working Group
@@ -31,6 +31,9 @@ commands:
   sell:
     description: 查看可出售物品与单价，出售手中物品换取金币，卖出后无法赎回
     usage: /sell | /sell sum | /sell sure
+  red:
+    description: 抢整点红包，随机获得金币（奇数整点发放，每人每轮一次）
+    usage: /red
   spawn:
     description: 返回主城出生点
     usage: /spawn

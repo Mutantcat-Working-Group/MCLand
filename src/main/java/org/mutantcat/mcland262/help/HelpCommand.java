@@ -26,6 +26,7 @@ public class HelpCommand implements CommandExecutor {
         sender.sendMessage(PREFIX + "/sell - 查看可出售物品与单价");
         sender.sendMessage(PREFIX + "/sell sum - 计算当前手中物品总价");
         sender.sendMessage(PREFIX + "/sell sure - 卖掉当前手中的物品换取金币，卖出后无法赎回");
+        sender.sendMessage(PREFIX + "/red - 抢整点红包，奇数整点发放，每人每轮一次");
         sender.sendMessage(PREFIX + "/spawn - 返回主城出生点");
         sender.sendMessage(PREFIX + "/sethome - 把当前位置设为 home");
         sender.sendMessage(PREFIX + "/home - 返回自己设置的 home");
