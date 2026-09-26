@@ -1,5 +1,5 @@
 name: MCLand
-version: 26.3.20260926
+version: 1.0.20260927
 main: org.mutantcat.mcland263.Main
 api-version: 26.3
 author: Mutantcat Working Group
@@ -20,6 +20,3 @@ commands:
   accept:
     description: 接受收到的传送请求
     usage: /accept
-  help:
-    description: 查看服务器帮助菜单
-    usage: /help

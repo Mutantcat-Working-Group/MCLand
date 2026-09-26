@@ -1,7 +1,7 @@
 package org.mutantcat.mcland263.user;
 
 import java.sql.SQLException;
-import java.util.HashSet;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 public class AuthManager implements AutoCloseable {
     private final UserDatabase database;
     private final Logger logger;
-    private final Set<UUID> loggedIn = new HashSet<>();
+    private final Set<UUID> loggedIn = ConcurrentHashMap.newKeySet();
 
     public AuthManager(UserDatabase database, Logger logger) {
         this.database = database;

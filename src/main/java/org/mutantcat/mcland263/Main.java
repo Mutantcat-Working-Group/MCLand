@@ -8,7 +8,6 @@ import org.bukkit.scheduler.BukkitTask;
 import org.mutantcat.mcland263.event.block.SpawnProtectionListener;
 import org.mutantcat.mcland263.event.player.NoDropOnDeathEvent;
 import org.mutantcat.mcland263.event.player.PlayerJoinedEvent;
-import org.mutantcat.mcland263.help.HelpCommand;
 import org.mutantcat.mcland263.help.HelpListener;
 import org.mutantcat.mcland263.timer.entity.AnimalClean;
 import org.mutantcat.mcland263.timer.entity.EntityClean;
@@ -31,6 +30,8 @@ public class Main extends JavaPlugin {
     private final List<BukkitTask> tasks = new ArrayList<>();
     private AuthManager authManager;
     private TeleportRequestManager teleportManager;
+    private EntityClean entityClean;
+    private AnimalClean animalClean;
 
     @Override
     public void onEnable() {
@@ -63,10 +64,8 @@ public class Main extends JavaPlugin {
         getCommand("tp").setExecutor(new TeleportCommand(teleportManager));
         getCommand("accept").setExecutor(new AcceptCommand(teleportManager));
 
-        // /help 帮助菜单
-        HelpCommand helpCommand = new HelpCommand();
+        // /help 帮助菜单：由 HelpListener 在命令预处理阶段拦截输出，不注册 /help 命令，避免与服务器内置命令冲突
         getServer().getPluginManager().registerEvents(new HelpListener(), this);
-        getCommand("help").setExecutor(helpCommand);
 
         // 主城保护（世界不存在时跳过并告警，避免 NPE）
         String worldName = getConfig().getString("spawn-protection.world", "world");
@@ -80,13 +79,13 @@ public class Main extends JavaPlugin {
 
         // 定时清理掉落物（interval-seconds 换算为 ticks，20 ticks = 1 秒；保底 1 秒避免 period 为 0 导致每 tick 触发）
         long itemInterval = Math.max(1L, getConfig().getLong("item-clean.interval-seconds", 300)) * 20L;
-        EntityClean entityClean = new EntityClean(this);
+        entityClean = new EntityClean(this);
         tasks.add(entityClean.runTaskTimer(this, 0L, itemInterval));
 
         // 定时清理生物
         long animalInterval = Math.max(1L, getConfig().getLong("animal-clean.interval-seconds", 3600)) * 20L;
         int animalCountdown = getConfig().getInt("animal-clean.countdown-seconds", 5);
-        AnimalClean animalClean = new AnimalClean(this, animalCountdown);
+        animalClean = new AnimalClean(this, animalCountdown);
         tasks.add(animalClean.runTaskTimer(this, 0L, animalInterval));
     }
 
@@ -97,6 +96,12 @@ public class Main extends JavaPlugin {
             task.cancel();
         }
         tasks.clear();
+        if (entityClean != null) {
+            entityClean.close();
+        }
+        if (animalClean != null) {
+            animalClean.close();
+        }
         if (teleportManager != null) {
             teleportManager.close();
         }
