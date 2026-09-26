@@ -72,6 +72,9 @@ public class UserDatabase implements AutoCloseable {
         if (!columns.contains("balance")) {
             statement.executeUpdate("ALTER TABLE users ADD COLUMN balance INTEGER NOT NULL DEFAULT 500");
         }
+        if (!columns.contains("last_checkin_day")) {
+            statement.executeUpdate("ALTER TABLE users ADD COLUMN last_checkin_day INTEGER");
+        }
     }
 
     public boolean isRegistered(UUID uuid) throws SQLException {
@@ -257,6 +260,63 @@ public class UserDatabase implements AutoCloseable {
             throw e;
         } finally {
             connection.setAutoCommit(previousAutoCommit);
+        }
+    }
+
+    /**
+     * 每日签到：每个账号每天只能签到一次，奖励直接入账到账号余额。
+     * todayEpochDay 用服务器本地日期的 epoch day 表示，比上次签到日大才允许签到，自然跨日清零；
+     * 判定与入账在同一个事务里完成，重复调用不会重复发奖。
+     * 返回变动后的余额；-1 表示账号不存在，-2 表示今天已经签到过，-3 表示奖励数额非法。
+     */
+    public long dailyCheckIn(UUID uuid, long todayEpochDay, long reward) throws SQLException {
+        if (reward <= 0) {
+            return -3L;
+        }
+        boolean previousAutoCommit = connection.getAutoCommit();
+        connection.setAutoCommit(false);
+        try {
+            if (balance(connection, uuid) < 0) {
+                connection.rollback();
+                return -1L;
+            }
+            Long lastDay = checkinDay(connection, uuid);
+            // 大于等于都算已签到：时钟回拨时不能靠“日子更小”再刷一次
+            if (lastDay != null && lastDay >= todayEpochDay) {
+                connection.rollback();
+                return -2L;
+            }
+            try (PreparedStatement statement = connection.prepareStatement(
+                    "UPDATE users SET last_checkin_day = ?, updated_at = ? WHERE uuid = ?")) {
+                statement.setLong(1, todayEpochDay);
+                statement.setLong(2, System.currentTimeMillis());
+                statement.setString(3, uuid.toString());
+                statement.executeUpdate();
+            }
+            addBalance(connection, uuid, reward);
+            long updated = balance(connection, uuid);
+            connection.commit();
+            return updated;
+        } catch (SQLException e) {
+            connection.rollback();
+            throw e;
+        } finally {
+            connection.setAutoCommit(previousAutoCommit);
+        }
+    }
+
+    /** 上次签到的 epoch day；没签到过或历史库该列为空都返回 null */
+    private Long checkinDay(Connection connection, UUID uuid) throws SQLException {
+        try (PreparedStatement statement = connection.prepareStatement(
+                "SELECT last_checkin_day FROM users WHERE uuid = ?")) {
+            statement.setString(1, uuid.toString());
+            try (ResultSet result = statement.executeQuery()) {
+                if (!result.next()) {
+                    return null;
+                }
+                long day = result.getLong(1);
+                return result.wasNull() ? null : day;
+            }
         }
     }
 

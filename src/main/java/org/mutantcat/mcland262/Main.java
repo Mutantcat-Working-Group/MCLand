@@ -6,6 +6,7 @@ import org.bukkit.World;
 import org.bukkit.Location;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
+import org.mutantcat.mcland262.checkin.CheckinCommand;
 import org.mutantcat.mcland262.event.block.SpawnProtectionListener;
 import org.mutantcat.mcland262.event.player.NoDropOnDeathEvent;
 import org.mutantcat.mcland262.event.player.PlayerJoinedEvent;
@@ -99,6 +100,15 @@ public class Main extends JavaPlugin {
         redPacketManager = new RedPacketManager(this, authManager, userDatabase);
         getCommand("red").setExecutor(new RedCommand(redPacketManager));
         getLogger().info("整点红包已启用（奇数整点发放，/red 每轮随机抢 1-10 金币，一小时内有效）");
+
+        // 每日签到（/check 每个账号每天一次，奖励入账到账号余额），与账号库同库；用户库未启用时跳过
+        if (userDatabase == null || authManager == null) {
+            getLogger().warning("用户数据库或登录系统未启用，每日签到未启用");
+        } else {
+            long checkinReward = Math.max(1L, getConfig().getLong("checkin.reward-coins", 1000L));
+            getCommand("check").setExecutor(new CheckinCommand(this, authManager, userDatabase, checkinReward));
+            getLogger().info("每日签到已启用（/check 每个账号每天一次，奖励 " + checkinReward + " 金币）");
+        }
 
         // /help 帮助菜单：由 HelpListener 在命令预处理阶段拦截输出，不注册 /help 命令，避免与服务器内置命令冲突
         getServer().getPluginManager().registerEvents(new HelpListener(), this);

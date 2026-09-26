@@ -1,11 +1,11 @@
 name: MCLand
-version: 26.2.20261007
+version: 26.2.20261008
 main: org.mutantcat.mcland262.Main
 api-version: 26.2
 author: Mutantcat Working Group
 softdepend:
   - floodgate
-description: 方块猫窝公益服插件（主城保护与能量墙/死亡不掉落/定期清理/注册登录/传送请求/回城与home/金币系统/交易系统/帮助菜单/圈地系统）
+description: 方块猫窝公益服插件（主城保护与能量墙/死亡不掉落/定期清理/注册登录/传送请求/回城与home/金币系统/交易系统/帮助菜单/圈地系统/每日签到）
 commands:
   register:
     description: 注册当前用户名的密码
@@ -34,6 +34,9 @@ commands:
   red:
     description: 抢整点红包，随机获得金币（奇数整点发放，每人每轮一次）
     usage: /red
+  check:
+    description: 每日签到，每个账号每天一次，奖励金币
+    usage: /check
   spawn:
     description: 返回主城出生点
     usage: /spawn
