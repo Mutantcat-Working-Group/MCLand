@@ -101,7 +101,8 @@ public class AuthListener implements Listener {
         String message = event.getMessage().toLowerCase(Locale.ROOT).trim();
         if (message.equals("/register") || message.startsWith("/register ")
                 || message.equals("/login") || message.startsWith("/login ")
-                || message.equals("/password") || message.startsWith("/password ")) {
+                || message.equals("/password") || message.startsWith("/password ")
+                || message.equals("/help") || message.startsWith("/help ")) {
             return;
         }
         event.setCancelled(true);

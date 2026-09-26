@@ -3,7 +3,7 @@ version: 26.3.20260926
 main: org.mutantcat.mcland263.Main
 api-version: 26.3
 author: Mutantcat Working Group
-description: 方块猫窝公益服插件（主城保护/死亡不掉落/定期清理/注册登录/传送请求）
+description: 方块猫窝公益服插件（主城保护/死亡不掉落/定期清理/注册登录/传送请求/帮助菜单）
 commands:
   register:
     description: 注册当前用户名的密码
@@ -20,3 +20,6 @@ commands:
   accept:
     description: 接受收到的传送请求
     usage: /accept
+  help:
+    description: 查看服务器帮助菜单
+    usage: /help

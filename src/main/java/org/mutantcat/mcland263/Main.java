@@ -8,6 +8,8 @@ import org.bukkit.scheduler.BukkitTask;
 import org.mutantcat.mcland263.event.block.SpawnProtectionListener;
 import org.mutantcat.mcland263.event.player.NoDropOnDeathEvent;
 import org.mutantcat.mcland263.event.player.PlayerJoinedEvent;
+import org.mutantcat.mcland263.help.HelpCommand;
+import org.mutantcat.mcland263.help.HelpListener;
 import org.mutantcat.mcland263.timer.entity.AnimalClean;
 import org.mutantcat.mcland263.timer.entity.EntityClean;
 import org.mutantcat.mcland263.teleport.AcceptCommand;
@@ -60,6 +62,11 @@ public class Main extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new TeleportListener(teleportManager), this);
         getCommand("tp").setExecutor(new TeleportCommand(teleportManager));
         getCommand("accept").setExecutor(new AcceptCommand(teleportManager));
+
+        // /help 帮助菜单
+        HelpCommand helpCommand = new HelpCommand();
+        getServer().getPluginManager().registerEvents(new HelpListener(), this);
+        getCommand("help").setExecutor(helpCommand);
 
         // 主城保护（世界不存在时跳过并告警，避免 NPE）
         String worldName = getConfig().getString("spawn-protection.world", "world");
