@@ -17,6 +17,7 @@ import org.mutantcat.mcland262.spawn.SpawnCommand;
 import org.mutantcat.mcland262.spawn.SpawnGuardTask;
 import org.mutantcat.mcland262.spawn.SpawnRegion;
 import org.mutantcat.mcland262.spawn.SpawnWallTask;
+import org.mutantcat.mcland262.sell.SellCommand;
 import org.mutantcat.mcland262.timer.entity.AnimalClean;
 import org.mutantcat.mcland262.timer.entity.EntityClean;
 import org.mutantcat.mcland262.teleport.AcceptCommand;
@@ -80,6 +81,10 @@ public class Main extends JavaPlugin {
         // 金币系统（/money 查余额与转账，/request 索要），与账号库同库，金币跟账号绑定
         getCommand("money").setExecutor(new MoneyCommand(this, authManager, teleportManager, userDatabase));
         getCommand("request").setExecutor(new MoneyCommand(this, authManager, teleportManager, userDatabase));
+
+        // 交易系统（/sell 查看价目，/sell sum 估价，/sell sure 出售手中物品），卖出金币入账到账号余额
+        getCommand("sell").setExecutor(new SellCommand(this, authManager, userDatabase));
+        getLogger().info("交易系统已启用（/sell、/sell sum、/sell sure）");
 
         // /help 帮助菜单：由 HelpListener 在命令预处理阶段拦截输出，不注册 /help 命令，避免与服务器内置命令冲突
         getServer().getPluginManager().registerEvents(new HelpListener(), this);

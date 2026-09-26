@@ -156,6 +156,30 @@ public class UserDatabase implements AutoCloseable {
         return balance(connection, uuid);
     }
 
+    /**
+     * 给账号增加金币（交易系统卖出物品入账用），返回变动后的余额；账号不存在返回 -1。
+     * 与转账一样放在单连接事务里，记账与刷新时间要么都成功要么都回滚。
+     */
+    public long addBalance(UUID uuid, long delta) throws SQLException {
+        boolean previousAutoCommit = connection.getAutoCommit();
+        connection.setAutoCommit(false);
+        try {
+            if (balance(connection, uuid) < 0) {
+                connection.rollback();
+                return -1L;
+            }
+            addBalance(connection, uuid, delta);
+            long updated = balance(connection, uuid);
+            connection.commit();
+            return updated;
+        } catch (SQLException e) {
+            connection.rollback();
+            throw e;
+        } finally {
+            connection.setAutoCommit(previousAutoCommit);
+        }
+    }
+
     /** 按用户名反查 UUID（不区分大小写），找不到返回 null；用于给离线玩家转账，含间歇泉前缀名 */
     public UUID findUuidByName(String username) throws SQLException {
         if (username == null || username.isEmpty()) {
