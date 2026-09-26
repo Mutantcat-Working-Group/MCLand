@@ -36,7 +36,7 @@ public class EntityClean extends BukkitRunnable {
             public void run() {
                 Bukkit.getWorlds().forEach(world ->
                         world.getEntitiesByClasses(Item.class).forEach(Entity::remove));
-                Bukkit.broadcastMessage("§a掉落物已被清除。");
+                Bukkit.broadcastMessage("掉落物已被清除。");
             }
         }.runTaskLater(plugin, CLEAN_DELAY_SECONDS * 20L);
     }
