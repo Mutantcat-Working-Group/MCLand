@@ -23,7 +23,7 @@ import java.util.logging.Level;
  * 卖出后物品直接消失且无法赎回，所以每一步提示都带无法赎回的提醒。
  */
 public class SellCommand implements CommandExecutor {
-    private static final String PREFIX = "[MCLand]";
+    private static final String PREFIX = "[交易系统]";
 
     /** 可出售物品与单价（金币），按展示顺序排列 */
     private static final List<SellItem> PRICE_LIST = List.of(

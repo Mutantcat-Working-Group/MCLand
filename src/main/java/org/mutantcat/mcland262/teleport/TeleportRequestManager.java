@@ -18,7 +18,7 @@ import java.util.logging.Level;
  */
 public class TeleportRequestManager {
     private static final String PREFIX = "[TP]";
-    private static final String PREFIX_MONEY = "[MCLand]";
+    private static final String PREFIX_MONEY = "[交易系统]";
     private static final long REQUEST_TIMEOUT_TICKS = 30L * 20L;
 
     /** 请求类型：传送在 /accept 时直接飞过去，金币索要在 /accept 时按类型执行转账 */

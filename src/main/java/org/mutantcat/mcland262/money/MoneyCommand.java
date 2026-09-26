@@ -20,7 +20,7 @@ import java.util.logging.Level;
  * 金币与账号绑定，读写都落在登录库 users 表的 balance 列。
  */
 public class MoneyCommand implements CommandExecutor {
-    private static final String PREFIX = "[MCLand]";
+    private static final String PREFIX = "[交易系统]";
 
     private final JavaPlugin plugin;
     private final AuthManager authManager;
