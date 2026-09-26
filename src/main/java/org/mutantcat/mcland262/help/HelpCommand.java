@@ -23,7 +23,7 @@ public class HelpCommand implements CommandExecutor {
         sender.sendMessage(PREFIX + "/spawn - 返回主城出生点");
         sender.sendMessage(PREFIX + "/sethome - 把当前位置设为 home");
         sender.sendMessage(PREFIX + "/home - 返回自己设置的 home");
-        sender.sendMessage(PREFIX + "主城保护 - 以出生点为中心的正方形区域，普通玩家不能放置和破坏方块，管理员不受限制");
+        sender.sendMessage(PREFIX + "主城保护 - 以出生点为中心的正方形区域，普通玩家不能放置和破坏方块，怪物、爆炸和环境也改不动这里的地形，管理员不受限制");
         sender.sendMessage(PREFIX + "能量墙 - 主城边界有蓝色半透明能量墙标示范围");
         sender.sendMessage(PREFIX + "怪物秒杀 - 怪物进入主城范围会被直接击杀，且不掉落物品");
         sender.sendMessage(PREFIX + "死亡不掉落 - 死亡时保留背包，不产生掉落物");
