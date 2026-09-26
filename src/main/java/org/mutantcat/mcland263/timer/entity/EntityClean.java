@@ -3,7 +3,6 @@ package org.mutantcat.mcland263.timer.entity;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -14,29 +13,23 @@ import org.bukkit.scheduler.BukkitRunnable;
  **/
 
 public class EntityClean extends BukkitRunnable {
-    private final JavaPlugin plugin; // 插件实例，用于调度倒计时任务
-    private final int countdownTime; // 倒计时时间（秒）
+    private static final int CLEAN_DELAY_SECONDS = 60; // 通告结束后清理前的固定倒计时
 
-    public EntityClean(JavaPlugin plugin, int countdownSeconds) {
+    private final JavaPlugin plugin; // 插件实例，用于调度通告和清理任务
+
+    public EntityClean(JavaPlugin plugin) {
         this.plugin = plugin;
-        // 至少 1 秒，避免配置为 0 或负数时出现异常倒计时
-        this.countdownTime = Math.max(1, countdownSeconds);
     }
 
     @Override
     public void run() {
-        // 用主线程定时任务分次发出倒计时提示，避免在主线程 sleep 阻塞服务器
-        for (int i = countdownTime; i > 0; i--) {
-            final int secondsLeft = i;
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    for (Player player : Bukkit.getOnlinePlayers()) {
-                        player.sendMessage("§c注意：全世界的掉落物将在 " + secondsLeft + " 秒后被清除！");
-                    }
-                }
-            }.runTaskLater(plugin, (countdownTime - secondsLeft) * 20L);
+        // 清理前 60 秒、30 秒各通告一次，最后 5 秒每秒通告
+        announce(60);
+        announce(30);
+        for (int i = 5; i > 0; i--) {
+            announce(i);
         }
+
         // 倒计时结束后清除掉落物
         new BukkitRunnable() {
             @Override
@@ -45,6 +38,15 @@ public class EntityClean extends BukkitRunnable {
                         world.getEntitiesByClasses(Item.class).forEach(Entity::remove));
                 Bukkit.broadcastMessage("§a掉落物已被清除。");
             }
-        }.runTaskLater(plugin, countdownTime * 20L);
+        }.runTaskLater(plugin, CLEAN_DELAY_SECONDS * 20L);
+    }
+
+    private void announce(int secondsLeft) {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                Bukkit.broadcastMessage("[掉落物清理]距离下次掉落物清理还差" + secondsLeft + "，请注意拾取");
+            }
+        }.runTaskLater(plugin, (CLEAN_DELAY_SECONDS - secondsLeft) * 20L);
     }
 }

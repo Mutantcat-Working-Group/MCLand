@@ -41,9 +41,8 @@ public class Main extends JavaPlugin {
         }
 
         // 定时清理掉落物（interval-seconds 换算为 ticks，20 ticks = 1 秒；保底 1 秒避免 period 为 0 导致每 tick 触发）
-        long itemInterval = Math.max(1L, getConfig().getLong("item-clean.interval-seconds", 1800)) * 20L;
-        int itemCountdown = getConfig().getInt("item-clean.countdown-seconds", 5);
-        EntityClean entityClean = new EntityClean(this, itemCountdown);
+        long itemInterval = Math.max(1L, getConfig().getLong("item-clean.interval-seconds", 300)) * 20L;
+        EntityClean entityClean = new EntityClean(this);
         tasks.add(entityClean.runTaskTimer(this, 0L, itemInterval));
 
         // 定时清理生物
