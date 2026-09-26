@@ -12,6 +12,7 @@ import org.mutantcat.mcland262.help.HelpListener;
 import org.mutantcat.mcland262.home.HomeCommand;
 import org.mutantcat.mcland262.home.HomeDatabase;
 import org.mutantcat.mcland262.home.HomeManager;
+import org.mutantcat.mcland262.money.MoneyCommand;
 import org.mutantcat.mcland262.spawn.SpawnCommand;
 import org.mutantcat.mcland262.spawn.SpawnGuardTask;
 import org.mutantcat.mcland262.spawn.SpawnRegion;
@@ -35,6 +36,7 @@ import java.util.logging.Level;
 public class Main extends JavaPlugin {
     // 记录注册的定时任务，便于卸载时统一取消
     private final List<BukkitTask> tasks = new ArrayList<>();
+    private UserDatabase userDatabase;
     private AuthManager authManager;
     private TeleportRequestManager teleportManager;
     private EntityClean entityClean;
@@ -55,7 +57,7 @@ public class Main extends JavaPlugin {
 
         // 注册/登录功能（SQLite 用户库初始化失败时仅告警，不影响其余功能）
         try {
-            UserDatabase userDatabase = new UserDatabase(this);
+            userDatabase = new UserDatabase(this);
             authManager = new AuthManager(userDatabase, getLogger(),
                     getConfig().getBoolean("auth.bedrock-session.enabled", true),
                     getConfig().getLong("auth.bedrock-session.window-minutes", 60L));
@@ -70,10 +72,14 @@ public class Main extends JavaPlugin {
         }
 
         // 玩家传送请求（/tp 发起，/accept 接受）
-        teleportManager = new TeleportRequestManager(this, authManager);
+        teleportManager = new TeleportRequestManager(this, authManager, userDatabase);
         getServer().getPluginManager().registerEvents(new TeleportListener(teleportManager), this);
         getCommand("tp").setExecutor(new TeleportCommand(teleportManager));
         getCommand("accept").setExecutor(new AcceptCommand(teleportManager));
+
+        // 金币系统（/money 查余额与转账，/request 索要），与账号库同库，金币跟账号绑定
+        getCommand("money").setExecutor(new MoneyCommand(this, authManager, teleportManager, userDatabase));
+        getCommand("request").setExecutor(new MoneyCommand(this, authManager, teleportManager, userDatabase));
 
         // /help 帮助菜单：由 HelpListener 在命令预处理阶段拦截输出，不注册 /help 命令，避免与服务器内置命令冲突
         getServer().getPluginManager().registerEvents(new HelpListener(), this);

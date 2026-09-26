@@ -22,6 +22,9 @@ import java.util.UUID;
  * 用户账号 SQLite 存储，固定写入 plugins/MCLand/MCLand/user/user.db。
  */
 public class UserDatabase implements AutoCloseable {
+    /** 新注册账号默认赠送的金币数量 */
+    public static final long DEFAULT_BALANCE = 500L;
+
     private final Connection connection;
 
     public UserDatabase(JavaPlugin plugin) throws SQLException {
@@ -41,6 +44,7 @@ public class UserDatabase implements AutoCloseable {
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS users (" +
                     "uuid TEXT PRIMARY KEY," +
                     "username TEXT NOT NULL," +
+                    "balance INTEGER NOT NULL DEFAULT 500," +
                     "password_md5 TEXT NOT NULL," +
                     "created_at INTEGER NOT NULL," +
                     "updated_at INTEGER NOT NULL)");
@@ -64,6 +68,9 @@ public class UserDatabase implements AutoCloseable {
         }
         if (!columns.contains("bedrock_login_ip")) {
             statement.executeUpdate("ALTER TABLE users ADD COLUMN bedrock_login_ip TEXT");
+        }
+        if (!columns.contains("balance")) {
+            statement.executeUpdate("ALTER TABLE users ADD COLUMN balance INTEGER NOT NULL DEFAULT 500");
         }
     }
 
@@ -90,12 +97,13 @@ public class UserDatabase implements AutoCloseable {
     public void register(UUID uuid, String username, String password) throws SQLException {
         long now = System.currentTimeMillis();
         try (PreparedStatement statement = connection.prepareStatement(
-                "INSERT INTO users (uuid, username, password_md5, created_at, updated_at) VALUES (?, ?, ?, ?, ?)")) {
+                "INSERT INTO users (uuid, username, password_md5, balance, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)")) {
             statement.setString(1, uuid.toString());
             statement.setString(2, username);
             statement.setString(3, md5(password));
-            statement.setLong(4, now);
+            statement.setLong(4, DEFAULT_BALANCE);
             statement.setLong(5, now);
+            statement.setLong(6, now);
             statement.executeUpdate();
         }
     }
@@ -143,7 +151,78 @@ public class UserDatabase implements AutoCloseable {
         }
     }
 
-    /** 基岩版缓存登录：上次成功登录的时刻与服务端看到的连接 IP */
+    /** 查询金币余额，未注册返回 -1 */
+    public long getBalance(UUID uuid) throws SQLException {
+        return balance(connection, uuid);
+    }
+
+    /** 按用户名反查 UUID（不区分大小写），找不到返回 null；用于给离线玩家转账，含间歇泉前缀名 */
+    public UUID findUuidByName(String username) throws SQLException {
+        if (username == null || username.isEmpty()) {
+            return null;
+        }
+        try (PreparedStatement statement = connection.prepareStatement(
+                "SELECT uuid FROM users WHERE username = ? COLLATE NOCASE")) {
+            statement.setString(1, username);
+            try (ResultSet result = statement.executeQuery()) {
+                return result.next() ? UUID.fromString(result.getString(1)) : null;
+            }
+        }
+    }
+
+    /**
+     * 转账：单连接事务，扣款和入账要么都成功要么都回滚。
+     * 参数非法、账号缺失或余额不足都返回 false，不用抛异常区分业务失败和系统失败。
+     */
+    public boolean transfer(UUID from, UUID to, long amount) throws SQLException {
+        if (from == null || to == null || from.equals(to) || amount <= 0) {
+            return false;
+        }
+        boolean previousAutoCommit = connection.getAutoCommit();
+        connection.setAutoCommit(false);
+        try {
+            long fromBalance = balance(connection, from);
+            if (fromBalance < 0 || fromBalance < amount) {
+                connection.rollback();
+                return false;
+            }
+            // 目标账号不存在时不凭空入账
+            if (balance(connection, to) < 0) {
+                connection.rollback();
+                return false;
+            }
+            addBalance(connection, from, -amount);
+            addBalance(connection, to, amount);
+            connection.commit();
+            return true;
+        } catch (SQLException e) {
+            connection.rollback();
+            throw e;
+        } finally {
+            connection.setAutoCommit(previousAutoCommit);
+        }
+    }
+
+    private long balance(Connection connection, UUID uuid) throws SQLException {
+        try (PreparedStatement statement = connection.prepareStatement(
+                "SELECT balance FROM users WHERE uuid = ?")) {
+            statement.setString(1, uuid.toString());
+            try (ResultSet result = statement.executeQuery()) {
+                return result.next() ? result.getLong(1) : -1L;
+            }
+        }
+    }
+
+    private void addBalance(Connection connection, UUID uuid, long delta) throws SQLException {
+        try (PreparedStatement statement = connection.prepareStatement(
+                "UPDATE users SET balance = balance + ?, updated_at = ? WHERE uuid = ?")) {
+            statement.setLong(1, delta);
+            statement.setLong(2, System.currentTimeMillis());
+            statement.setString(3, uuid.toString());
+            statement.executeUpdate();
+        }
+    }
+
     public record BedrockSession(long loginAt, String ip) {}
 
     public static String md5(String text) {
