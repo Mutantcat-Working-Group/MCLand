@@ -31,7 +31,8 @@ jobs:
         run: |
           VERSION="${GITHUB_REF_NAME#v}"
           mkdir -p "dist/MCLand-${VERSION}"
-          cp target/*.jar "dist/MCLand-${VERSION}/"
+          # 只打包最终插件 jar，排除 maven-shade 留下的 original- 备份 jar
+          find target -maxdepth 1 -type f -name "*.jar" ! -name "original-*.jar" -exec cp {} "dist/MCLand-${VERSION}/" \;
           cp LICENSE.txt README.md "dist/MCLand-${VERSION}/"
           tar -czf "dist/MCLand-${VERSION}.tar.gz" -C dist "MCLand-${VERSION}"
           cd dist
