@@ -3,4 +3,14 @@ version: 26.3.20260926
 main: org.mutantcat.mcland263.Main
 api-version: 26.3
 author: Mutantcat Working Group
-description: 方块猫窝公益服插件（主城保护/死亡不掉落/定期清理）
+description: 方块猫窝公益服插件（主城保护/死亡不掉落/定期清理/注册登录）
+commands:
+  register:
+    description: 注册当前用户名的密码
+    usage: /register 密码 确认密码
+  login:
+    description: 登录当前用户名
+    usage: /login 密码
+  password:
+    description: 修改当前账号密码
+    usage: /password 密码 确认密码

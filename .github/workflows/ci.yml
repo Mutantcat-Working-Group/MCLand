@@ -22,4 +22,4 @@ jobs:
           cache: maven
 
       - name: Test and package
-        run: mvn -B test
+        run: mvn -B clean package

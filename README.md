@@ -30,6 +30,7 @@
 - MC从1.19版本开始（包括服务器）已不再支持Java8至少要用Java17运行
 - `mc-26.3` 服务器与插件均基于 Java 25
 - `mc-26.3` 分支的 Spigot API 来自 `server.jar` 内置库（`META-INF/libraries/spigot-api-26.3-R0.1-SNAPSHOT.jar`），已抽取至 `lib/spigot-26.3.jar` 作为本地依赖，构建前无需连接 Spigot 仓库
+- 注册/登录账号保存在 `plugins/MCLand/MCLand/user/user.db`，按玩家 UUID 建号；Floodgate 默认给基岩版用户名加 `.` 前缀，服内实际名称带前缀，不影响注册登录，修改前缀也不会丢账号
 - 这里可以下载到Java的历史版本https://jdk.java.net/archive/
 - 新版仓库地址https://github.com/Mutantcat-Working-Group/MCLand
 - Spigot构建工具https://hub.spigotmc.org/jenkins/job/BuildTools/
@@ -37,7 +38,7 @@
 ### 四、版本功能
 
 - 主城保护
-- 用户登录
+- 用户注册/登录（`/register`、`/login`、`/password`，SQLite 存储 MD5 密码）
 - 定期清理掉落物
 - 定期清理生物
 

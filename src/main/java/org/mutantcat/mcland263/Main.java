@@ -10,13 +10,20 @@ import org.mutantcat.mcland263.event.player.NoDropOnDeathEvent;
 import org.mutantcat.mcland263.event.player.PlayerJoinedEvent;
 import org.mutantcat.mcland263.timer.entity.AnimalClean;
 import org.mutantcat.mcland263.timer.entity.EntityClean;
+import org.mutantcat.mcland263.user.AuthCommand;
+import org.mutantcat.mcland263.user.AuthListener;
+import org.mutantcat.mcland263.user.AuthManager;
+import org.mutantcat.mcland263.user.UserDatabase;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 public class Main extends JavaPlugin {
     // 记录注册的定时任务，便于卸载时统一取消
     private final List<BukkitTask> tasks = new ArrayList<>();
+    private AuthManager authManager;
 
     @Override
     public void onEnable() {
@@ -27,8 +34,21 @@ public class Main extends JavaPlugin {
 
         // 注册事件
         getServer().getPluginManager().registerEvents(
-                new PlayerJoinedEvent(getConfig().getString("welcome-message", "欢迎来到Mutantcat Land！")), this);
+                new PlayerJoinedEvent(getConfig().getString("welcome-message", "[MCLand]欢迎来到方块猫窝！")), this);
         getServer().getPluginManager().registerEvents(new NoDropOnDeathEvent(), this);
+
+        // 注册/登录功能（SQLite 用户库初始化失败时仅告警，不影响其余功能）
+        try {
+            UserDatabase userDatabase = new UserDatabase(this);
+            authManager = new AuthManager(userDatabase, getLogger());
+            getServer().getPluginManager().registerEvents(new AuthListener(this, authManager), this);
+            getCommand("register").setExecutor(new AuthCommand(authManager));
+            getCommand("login").setExecutor(new AuthCommand(authManager));
+            getCommand("password").setExecutor(new AuthCommand(authManager));
+            getLogger().info("用户注册/登录功能已启用（SQLite）");
+        } catch (SQLException e) {
+            getLogger().log(Level.SEVERE, "用户数据库初始化失败，注册/登录功能未启用", e);
+        }
 
         // 主城保护（世界不存在时跳过并告警，避免 NPE）
         String worldName = getConfig().getString("spawn-protection.world", "world");
@@ -59,6 +79,13 @@ public class Main extends JavaPlugin {
             task.cancel();
         }
         tasks.clear();
+        if (authManager != null) {
+            try {
+                authManager.close();
+            } catch (SQLException e) {
+                getLogger().log(Level.SEVERE, "关闭用户数据库失败", e);
+            }
+        }
         getLogger().info("Mutantcat Land 26.3 服务器正在关闭!");
     }
 }
