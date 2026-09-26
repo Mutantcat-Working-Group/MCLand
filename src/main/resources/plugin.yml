@@ -1,11 +1,11 @@
 name: MCLand
-version: 26.2.20261004
+version: 26.2.20261005
 main: org.mutantcat.mcland262.Main
 api-version: 26.2
 author: Mutantcat Working Group
 softdepend:
   - floodgate
-description: 方块猫窝公益服插件（主城保护与能量墙/死亡不掉落/定期清理/注册登录/传送请求/回城与home/金币系统/交易系统/帮助菜单）
+description: 方块猫窝公益服插件（主城保护与能量墙/死亡不掉落/定期清理/注册登录/传送请求/回城与home/金币系统/交易系统/帮助菜单/圈地系统）
 commands:
   register:
     description: 注册当前用户名的密码
@@ -43,3 +43,6 @@ commands:
   home:
     description: 返回自己设置的 home
     usage: /home
+  land:
+    description: 圈地：木铲选点购买领地，whitelist 管理白名单，领地内仅主人与白名单可建造、破坏和交互
+    usage: /land | /land sum | /land sure | /land off | /land whitelist add 玩家名

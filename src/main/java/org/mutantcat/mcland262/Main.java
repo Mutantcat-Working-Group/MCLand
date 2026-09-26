@@ -3,12 +3,17 @@
 package org.mutantcat.mcland262;
 
 import org.bukkit.World;
+import org.bukkit.Location;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 import org.mutantcat.mcland262.event.block.SpawnProtectionListener;
 import org.mutantcat.mcland262.event.player.NoDropOnDeathEvent;
 import org.mutantcat.mcland262.event.player.PlayerJoinedEvent;
 import org.mutantcat.mcland262.help.HelpListener;
+import org.mutantcat.mcland262.land.LandCommand;
+import org.mutantcat.mcland262.land.LandListener;
+import org.mutantcat.mcland262.land.LandManager;
+import org.mutantcat.mcland262.land.LandProtectionListener;
 import org.mutantcat.mcland262.home.HomeCommand;
 import org.mutantcat.mcland262.home.HomeDatabase;
 import org.mutantcat.mcland262.home.HomeManager;
@@ -46,6 +51,7 @@ public class Main extends JavaPlugin {
     private AnimalClean animalClean;
     private HomeManager homeManager;
     private RedPacketManager redPacketManager;
+    private LandManager landManager;
 
     @Override
     public void onEnable() {
@@ -140,6 +146,37 @@ public class Main extends JavaPlugin {
             getLogger().log(Level.SEVERE, "home 数据库初始化失败，home 功能未启用", e);
         }
 
+        // 圈地系统（木铲两点选点、金币购买、白名单与领地保护），与账号库同库；用户库未启用时跳过
+        if (userDatabase == null || authManager == null) {
+            getLogger().warning("用户数据库或登录系统未启用，圈地系统未启用");
+        } else {
+            long landPricePerBlock = Math.max(1L, getConfig().getLong("land.price-per-block", 1000L));
+            int landMinSide = Math.max(1, getConfig().getInt("land.min-side-blocks", 5));
+            // 主城保护区换算成水平矩形；主城没加载时为 null，买地不与他判重
+            LandManager.SpawnRect landSpawnRect = null;
+            if (spawnWorld != null) {
+                Location spawnCenter = spawnWorld.getSpawnLocation();
+                int spawnRadius = Math.max(0, getConfig().getInt("spawn-protection.radius", 20));
+                landSpawnRect = new LandManager.SpawnRect(spawnWorld.getName(),
+                        (int) Math.floor(spawnCenter.getX() - spawnRadius),
+                        (int) Math.ceil(spawnCenter.getX() + spawnRadius),
+                        (int) Math.floor(spawnCenter.getZ() - spawnRadius),
+                        (int) Math.ceil(spawnCenter.getZ() + spawnRadius));
+            }
+            try {
+                landManager = new LandManager(this, authManager, userDatabase,
+                        landPricePerBlock, landMinSide, landSpawnRect);
+                getServer().getPluginManager().registerEvents(new LandListener(landManager), this);
+                getServer().getPluginManager().registerEvents(new LandProtectionListener(landManager), this);
+                getCommand("land").setExecutor(new LandCommand(landManager, authManager));
+                getLogger().info("圈地系统已启用（木铲右键选点，/land 确认圈地，每格 " + landPricePerBlock
+                        + " 金币，至少 " + landMinSide + "x" + landMinSide
+                        + "，/land whitelist 管理白名单）");
+            } catch (SQLException e) {
+                getLogger().log(Level.SEVERE, "圈地数据库初始化失败，圈地系统未启用", e);
+            }
+        }
+
         // 定时清理掉落物（interval-seconds 换算为 ticks，20 ticks = 1 秒；保底 1 秒避免 period 为 0 导致每 tick 触发）
         long itemInterval = Math.max(1L, getConfig().getLong("item-clean.interval-seconds", 900)) * 20L;
         entityClean = new EntityClean(this);
@@ -184,6 +221,13 @@ public class Main extends JavaPlugin {
                 homeManager.close();
             } catch (SQLException e) {
                 getLogger().log(Level.SEVERE, "关闭 home 数据库失败", e);
+            }
+        }
+        if (landManager != null) {
+            try {
+                landManager.close();
+            } catch (SQLException e) {
+                getLogger().log(Level.SEVERE, "关闭圈地数据库失败", e);
             }
         }
         getLogger().info("Mutantcat Land 26.2 服务器正在关闭!");

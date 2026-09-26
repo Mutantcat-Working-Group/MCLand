@@ -195,6 +195,39 @@ public class UserDatabase implements AutoCloseable {
     }
 
     /**
+     * 账户支出（圈地买地等消费用途），返回变动后的余额。
+     * 返回 -1 表示账号不存在，-2 表示余额不足，-3 表示金额非法；
+     * 余额校验与扣款在同一个事务里完成，不会出现“查的时候够、扣的时候不够”。
+     */
+    public long spend(UUID uuid, long amount) throws SQLException {
+        if (amount <= 0) {
+            return -3L;
+        }
+        boolean previousAutoCommit = connection.getAutoCommit();
+        connection.setAutoCommit(false);
+        try {
+            long current = balance(connection, uuid);
+            if (current < 0) {
+                connection.rollback();
+                return -1L;
+            }
+            if (current < amount) {
+                connection.rollback();
+                return -2L;
+            }
+            addBalance(connection, uuid, -amount);
+            long updated = balance(connection, uuid);
+            connection.commit();
+            return updated;
+        } catch (SQLException e) {
+            connection.rollback();
+            throw e;
+        } finally {
+            connection.setAutoCommit(previousAutoCommit);
+        }
+    }
+
+    /**
      * 转账：单连接事务，扣款和入账要么都成功要么都回滚。
      * 参数非法、账号缺失或余额不足都返回 false，不用抛异常区分业务失败和系统失败。
      */
