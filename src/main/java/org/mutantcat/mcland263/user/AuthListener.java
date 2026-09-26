@@ -18,7 +18,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.Locale;
 
 /**
- * 未注册/未登录玩家进服时提示，并限制其移动、操作和聊天。
+ * 未注册/未登录玩家进服时提示，并限制其移动、操作、聊天和其他命令，仅允许注册和登录命令。
  */
 public class AuthListener implements Listener {
     private static final String PREFIX = "[MCLand]";
@@ -95,14 +95,15 @@ public class AuthListener implements Listener {
 
     @EventHandler
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
         if (authManager.isLoggedIn(event.getPlayer().getUniqueId())) {
             return;
         }
         String message = event.getMessage().toLowerCase(Locale.ROOT).trim();
         if (message.equals("/register") || message.startsWith("/register ")
-                || message.equals("/login") || message.startsWith("/login ")
-                || message.equals("/password") || message.startsWith("/password ")
-                || message.equals("/help") || message.startsWith("/help ")) {
+                || message.equals("/login") || message.startsWith("/login ")) {
             return;
         }
         event.setCancelled(true);
