@@ -166,7 +166,7 @@ public class Main extends JavaPlugin {
             try {
                 landManager = new LandManager(this, authManager, userDatabase,
                         landPricePerBlock, landMinSide, landSpawnRect);
-                getServer().getPluginManager().registerEvents(new LandListener(landManager), this);
+                getServer().getPluginManager().registerEvents(new LandListener(landManager, authManager), this);
                 getServer().getPluginManager().registerEvents(new LandProtectionListener(landManager), this);
                 getCommand("land").setExecutor(new LandCommand(landManager, authManager));
                 getLogger().info("圈地系统已启用（木铲右键选点，/land 确认圈地，每格 " + landPricePerBlock

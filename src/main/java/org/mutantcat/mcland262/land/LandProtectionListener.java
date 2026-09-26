@@ -3,6 +3,7 @@ package org.mutantcat.mcland262.land;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -18,10 +19,13 @@ import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.PlayerLeashEntityEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import java.util.List;
@@ -162,7 +166,7 @@ public class LandProtectionListener implements Listener {
     /** 活塞推出：落点会进领地的直接取消，界外活塞推不进来 */
     @EventHandler
     public void onPistonExtend(BlockPistonExtendEvent event) {
-        if (movesIntoRegion(event.getBlocks(), event.getDirection())) {
+        if (movesIntoRegion(event.getBlocks(), event.getDirection(), event.getBlock().getLocation())) {
             event.setCancelled(true);
         }
     }
@@ -170,7 +174,7 @@ public class LandProtectionListener implements Listener {
     /** 活塞拉回：领地方块也不能被界外活塞拉出去 */
     @EventHandler
     public void onPistonRetract(BlockPistonRetractEvent event) {
-        if (movesIntoRegion(event.getBlocks(), event.getDirection())) {
+        if (movesIntoRegion(event.getBlocks(), event.getDirection(), event.getBlock().getLocation())) {
             event.setCancelled(true);
         }
     }
@@ -196,15 +200,66 @@ public class LandProtectionListener implements Listener {
         blocks.removeIf(block -> landManager.regionAt(block.getLocation()) != null);
     }
 
-    /** 活塞移动判定：只看移动后的落点是否落进领地，领地内自己推自己不受影响 */
-    private boolean movesIntoRegion(List<Block> blocks, BlockFace direction) {
+    /** 盔甲架：领地里的盔甲架只有授权玩家能打坏，非授权玩家和爆炸等外力一律拦下 */
+    @EventHandler
+    public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+        if (!(event.getEntity() instanceof ArmorStand)) {
+            return;
+        }
+        LandRegion region = landManager.regionAt(event.getEntity().getLocation());
+        if (region == null) {
+            return;
+        }
+        Entity damager = event.getDamager();
+        if (damager instanceof Player) {
+            if (!landManager.isAuthorized((Player) damager, region)) {
+                event.setCancelled(true);
+            }
+            return;
+        }
+        // 苦力怕爆炸、怪物攻击等外力一律拦下，盔甲架在领地内是受保护的陈设
+        event.setCancelled(true);
+    }
+
+    /** 盔甲架上的装备和收纳袋只有授权玩家能拿走放入 */
+    @EventHandler
+    public void onArmorStandManipulate(PlayerArmorStandManipulateEvent event) {
+        LandRegion region = landManager.regionAt(event.getRightClicked().getLocation());
+        if (region != null && !landManager.isAuthorized(event.getPlayer(), region)) {
+            event.getPlayer().sendMessage("此为他人领地，禁止操作");
+            event.setCancelled(true);
+        }
+    }
+
+    /** 拴绳：不让别人把领地里的牛羊拴走，也不许往领地里放拴绳的怪 */
+    @EventHandler
+    public void onLeashEntity(PlayerLeashEntityEvent event) {
+        LandRegion region = landManager.regionAt(event.getEntity().getLocation());
+        if (region != null && !landManager.isAuthorized(event.getPlayer(), region)) {
+            event.getPlayer().sendMessage("此为他人领地，禁止操作");
+            event.setCancelled(true);
+        }
+    }
+
+    /**
+     * 活塞移动判定，以活塞自身所在领地为准：
+     * 活塞在领地内（由授权玩家放置）→ 只许把方块推进同一块领地，推出界或推进别人领地一律拦，
+     * 这样领主自己的红石活塞机器在领地里正常运行，不像早先只要落点沾领地就全盘取消；
+     * 活塞在任何领地外 → 落点进入任何领地即拦，界外活塞推不进来。
+     */
+    private boolean movesIntoRegion(List<Block> blocks, BlockFace direction, Location pistonLocation) {
+        LandRegion pistonRegion = landManager.regionAt(pistonLocation);
         int dx = direction.getModX();
         int dy = direction.getModY();
         int dz = direction.getModZ();
         for (Block block : blocks) {
             Location origin = block.getLocation();
-            if (landManager.regionAt(origin) != null
-                    || landManager.regionAt(origin.add(dx, dy, dz)) != null) {
+            LandRegion to = landManager.regionAt(origin.clone().add(dx, dy, dz));
+            if (pistonRegion != null) {
+                if (to != null && !to.equals(pistonRegion)) {
+                    return true;
+                }
+            } else if (to != null) {
                 return true;
             }
         }

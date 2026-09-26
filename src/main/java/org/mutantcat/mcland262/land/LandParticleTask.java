@@ -34,8 +34,12 @@ public class LandParticleTask extends BukkitRunnable {
             return;
         }
         LandManager.Selection selection = manager.selectionOf(player.getUniqueId());
-        if (selection == null || selection.first == null) {
+        if (selection == null || selection.first == null || selection.first.getWorld() == null) {
             cancel();
+            return;
+        }
+        // 选点在别的世界（地狱/末地/主世界来回换）时不在当前世界乱画旧坐标，回来自动恢复
+        if (!selection.first.getWorld().equals(player.getLocation().getWorld())) {
             return;
         }
         renderFirst(selection.first);

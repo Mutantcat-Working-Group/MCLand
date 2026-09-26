@@ -9,17 +9,21 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.mutantcat.mcland262.user.AuthManager;
 
 /**
  * 木铲选点入口：主手持木铲右键方块即圈地选点。
  * 用 LOWEST 优先级抢在领地保护和登录限制之前接住事件并取消，
  * 保证在别人领地范围内、火把箱子旁边也能正常选点；取消事件同时避免木铲把草地质成土径。
+ * 未登录玩家不给选点（他们的右键本来就会被登录限制拦掉），避免给没账号的人预存坐标。
  */
 public class LandListener implements Listener {
     private final LandManager landManager;
+    private final AuthManager authManager;
 
-    public LandListener(LandManager landManager) {
+    public LandListener(LandManager landManager, AuthManager authManager) {
         this.landManager = landManager;
+        this.authManager = authManager;
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
@@ -32,6 +36,10 @@ public class LandListener implements Listener {
             return;
         }
         Player player = event.getPlayer();
+        if (authManager != null && !authManager.isLoggedIn(player.getUniqueId())) {
+            // 不在这里取消事件，交给登录限制统一拒绝并提示登录
+            return;
+        }
         if (player.getInventory().getItemInMainHand().getType() != Material.WOODEN_SHOVEL) {
             return;
         }
