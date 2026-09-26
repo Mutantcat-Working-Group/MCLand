@@ -1,11 +1,11 @@
 package org.mutantcat.mcland262.event.block;
 
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.mutantcat.mcland262.spawn.SpawnRegion;
 
 /**
  * Author: tyza66
@@ -13,48 +13,48 @@ import org.bukkit.event.block.BlockPlaceEvent;
  * Github: https://github.com/tyza66
  **/
 
+/**
+ * 主城保护：普通玩家在保护区域内不能放置也不能破坏方块；
+ * OP（或持有 mcland.spawnprotection.bypass 权限）直接放行，方便搭建和维护主城。
+ */
 public class SpawnProtectionListener implements Listener {
-    private final World spawnWorld; // 出生点所在的世界
-    private final Location spawnLocation; // 出生点的位置
-    private final int protectionRadius; // 保护区域的半径
-    private final long radiusSquared;   // 半径平方，避免每次计算开方
+    /** 绕过主城保护的权限节点，方便给非 OP 的建造者单独授权 */
+    public static final String BYPASS_PERMISSION = "mcland.spawnprotection.bypass";
 
-    public SpawnProtectionListener(World world, int radius) {
-        this.spawnWorld = world;
-        this.spawnLocation = world.getSpawnLocation();
-        this.protectionRadius = Math.max(0, radius);
-        this.radiusSquared = (long) this.protectionRadius * this.protectionRadius;
+    private final SpawnRegion region;
+
+    public SpawnProtectionListener(SpawnRegion region) {
+        this.region = region;
     }
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
-        if (isInProtectedArea(event.getBlock().getLocation())) {
+        Player player = event.getPlayer();
+        if (canBypass(player)) {
+            return;
+        }
+        if (region.contains(event.getBlock().getLocation())) {
             // 取消事件，阻止方块被破坏
-            event.getPlayer().sendMessage("这个区域受到保护，无法破坏方块。");
+            player.sendMessage("这个区域受到保护，无法破坏方块。");
             event.setCancelled(true);
         }
     }
 
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
-        if (isInProtectedArea(event.getBlock().getLocation())) {
+        Player player = event.getPlayer();
+        if (canBypass(player)) {
+            return;
+        }
+        if (region.contains(event.getBlock().getLocation())) {
             // 取消事件，阻止方块被放置
-            event.getPlayer().sendMessage("这个区域受到保护，无法放置方块。");
+            player.sendMessage("这个区域受到保护，无法放置方块。");
             event.setCancelled(true);
         }
     }
 
-    private boolean isInProtectedArea(Location location) {
-        // 空位置或非保护世界直接返回 false，避免 NPE
-        if (location == null || location.getWorld() == null || spawnWorld == null) {
-            return false;
-        }
-        if (!location.getWorld().equals(spawnWorld)) {
-            return false;
-        }
-        // 按水平距离（忽略 Y 轴）判断，高空/地下的方块不再被误判为受保护
-        double dx = location.getX() - spawnLocation.getX();
-        double dz = location.getZ() - spawnLocation.getZ();
-        return dx * dx + dz * dz <= radiusSquared;
+    /** OP 或被授权的建造者不受保护限制 */
+    private boolean canBypass(Player player) {
+        return player.isOp() || player.hasPermission(BYPASS_PERMISSION);
     }
 }

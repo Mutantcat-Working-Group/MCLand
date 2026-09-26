@@ -9,6 +9,13 @@ import org.mutantcat.mcland262.event.block.SpawnProtectionListener;
 import org.mutantcat.mcland262.event.player.NoDropOnDeathEvent;
 import org.mutantcat.mcland262.event.player.PlayerJoinedEvent;
 import org.mutantcat.mcland262.help.HelpListener;
+import org.mutantcat.mcland262.home.HomeCommand;
+import org.mutantcat.mcland262.home.HomeDatabase;
+import org.mutantcat.mcland262.home.HomeManager;
+import org.mutantcat.mcland262.spawn.SpawnCommand;
+import org.mutantcat.mcland262.spawn.SpawnGuardTask;
+import org.mutantcat.mcland262.spawn.SpawnRegion;
+import org.mutantcat.mcland262.spawn.SpawnWallTask;
 import org.mutantcat.mcland262.timer.entity.AnimalClean;
 import org.mutantcat.mcland262.timer.entity.EntityClean;
 import org.mutantcat.mcland262.teleport.AcceptCommand;
@@ -32,6 +39,7 @@ public class Main extends JavaPlugin {
     private TeleportRequestManager teleportManager;
     private EntityClean entityClean;
     private AnimalClean animalClean;
+    private HomeManager homeManager;
 
     @Override
     public void onEnable() {
@@ -71,10 +79,43 @@ public class Main extends JavaPlugin {
         String worldName = getConfig().getString("spawn-protection.world", "world");
         World spawnWorld = getServer().getWorld(worldName);
         if (spawnWorld != null) {
-            int radius = getConfig().getInt("spawn-protection.radius", 20);
-            getServer().getPluginManager().registerEvents(new SpawnProtectionListener(spawnWorld, radius), this);
+            SpawnRegion region = new SpawnRegion(spawnWorld, getConfig().getInt("spawn-protection.radius", 20));
+
+            // 普通玩家在区域内禁止放置和破坏，OP 及授权建造者放行
+            getServer().getPluginManager().registerEvents(new SpawnProtectionListener(region), this);
+
+            // 怪物秒杀：进入区域的敌对生物直接击杀，静默执行不播报；被秒杀的怪物不掉落物品和经验
+            SpawnGuardTask spawnGuard = new SpawnGuardTask(region);
+            getServer().getPluginManager().registerEvents(spawnGuard, this);
+            tasks.add(spawnGuard.runTaskTimer(this, 0L,
+                    Math.max(1L, getConfig().getLong("spawn-protection.guard.period-ticks", 10))));
+
+            // 边界能量墙：按玩家视野渲染边界粒子，可整体关闭
+            if (getConfig().getBoolean("spawn-protection.wall.enabled", true)) {
+                SpawnWallTask spawnWall = new SpawnWallTask(region,
+                        getConfig().getInt("spawn-protection.wall.view-distance-blocks", 24),
+                        getConfig().getInt("spawn-protection.wall.horizontal-step-blocks", 2),
+                        getConfig().getInt("spawn-protection.wall.vertical-range-blocks", 6),
+                        getConfig().getInt("spawn-protection.wall.vertical-step-blocks", 3));
+                tasks.add(spawnWall.runTaskTimer(this, 0L,
+                        Math.max(1L, getConfig().getLong("spawn-protection.wall.period-ticks", 20))));
+                getLogger().info("主城边界能量墙已启用");
+            }
+
+            // /spawn 返回主城出生点
+            getCommand("spawn").setExecutor(new SpawnCommand(region));
         } else {
             getLogger().warning("未找到世界 \"" + worldName + "\"，主城保护未启用。");
+        }
+
+        // home（/sethome 设置、/home 返回），与账号库同库；初始化失败仅告警，不影响其余功能
+        try {
+            homeManager = new HomeManager(this, new HomeDatabase(this));
+            getCommand("home").setExecutor(new HomeCommand(homeManager));
+            getCommand("sethome").setExecutor(new HomeCommand(homeManager));
+            getLogger().info("home 功能已启用（/sethome、/home）");
+        } catch (SQLException e) {
+            getLogger().log(Level.SEVERE, "home 数据库初始化失败，home 功能未启用", e);
         }
 
         // 定时清理掉落物（interval-seconds 换算为 ticks，20 ticks = 1 秒；保底 1 秒避免 period 为 0 导致每 tick 触发）
@@ -111,6 +152,13 @@ public class Main extends JavaPlugin {
                 authManager.close();
             } catch (SQLException e) {
                 getLogger().log(Level.SEVERE, "关闭用户数据库失败", e);
+            }
+        }
+        if (homeManager != null) {
+            try {
+                homeManager.close();
+            } catch (SQLException e) {
+                getLogger().log(Level.SEVERE, "关闭 home 数据库失败", e);
             }
         }
         getLogger().info("Mutantcat Land 26.2 服务器正在关闭!");

@@ -4,8 +4,25 @@
 spawn-protection:
   # 受保护的世界名（世界不存在时保护自动禁用并输出告警日志）
   world: world
-  # 保护半径（格，按水平距离计算）
+  # 保护半径（格，按水平距离计算；区域为以出生点为中心的正方形，该值即正方形半宽）
   radius: 20
+  # 边界能量墙：把正方形边界渲染成蓝色半透明粒子墙，只发给附近玩家，可整体关闭
+  wall:
+    enabled: true
+    # 水平可视距离（格）：只渲染玩家附近这段边界，越远越省资源
+    view-distance-blocks: 24
+    # 边界水平采样步长（格）
+    horizontal-step-blocks: 2
+    # 以玩家所在高度为中线，向上下延伸的格数
+    vertical-range-blocks: 6
+    # 纵向采样步长（格）
+    vertical-step-blocks: 3
+    # 刷新周期（ticks，20 ticks = 1 秒）
+    period-ticks: 20
+  # 怪物秒杀：进入区域的敌对生物直接击杀，且不掉落物品和经验（玩家自己击杀的正常掉落）
+  guard:
+    # 检查周期（ticks，越小反应越快，资源消耗越高）
+    period-ticks: 10
 
 # ===== 清理掉落物 =====
 item-clean:

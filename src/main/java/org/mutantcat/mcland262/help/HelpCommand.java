@@ -20,7 +20,12 @@ public class HelpCommand implements CommandExecutor {
         sender.sendMessage(PREFIX + "/password 密码 确认密码 - 更新密码");
         sender.sendMessage(PREFIX + "/tp 玩家名 - 向对方发送传送请求，对方 /accept 接受");
         sender.sendMessage(PREFIX + "/accept - 接受收到的传送请求");
-        sender.sendMessage(PREFIX + "主城保护 - 保护主城范围内的方块和互动");
+        sender.sendMessage(PREFIX + "/spawn - 返回主城出生点");
+        sender.sendMessage(PREFIX + "/sethome - 把当前位置设为 home");
+        sender.sendMessage(PREFIX + "/home - 返回自己设置的 home");
+        sender.sendMessage(PREFIX + "主城保护 - 以出生点为中心的正方形区域，普通玩家不能放置和破坏方块，管理员不受限制");
+        sender.sendMessage(PREFIX + "能量墙 - 主城边界有蓝色半透明能量墙标示范围");
+        sender.sendMessage(PREFIX + "怪物秒杀 - 怪物进入主城范围会被直接击杀，且不掉落物品");
         sender.sendMessage(PREFIX + "死亡不掉落 - 死亡时保留背包，不产生掉落物");
         sender.sendMessage(PREFIX + "掉落物清理 - 每15分钟清理一次，清理前有倒计时提示");
         sender.sendMessage(PREFIX + "生物清理 - 每小时清理一次，清理前有倒计时提示，村民不会被清理");
