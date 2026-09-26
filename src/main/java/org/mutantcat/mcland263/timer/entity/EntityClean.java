@@ -5,8 +5,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +18,7 @@ public class EntityClean extends BukkitRunnable {
     private static final int CLEAN_DELAY_SECONDS = 60; // 通告结束后清理前的固定倒计时
 
     private final JavaPlugin plugin; // 插件实例，用于调度通告和清理任务
-    private final List<BukkitTask> pendingTasks = new ArrayList<>(); // 延迟中的任务，插件卸载时统一取消
+    private final List<BukkitRunnable> pendingTasks = new ArrayList<>(); // 延迟中的任务，插件卸载时统一取消
 
     public EntityClean(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -64,7 +62,7 @@ public class EntityClean extends BukkitRunnable {
 
     // 插件卸载/重载时取消延迟中的通告和清理，避免关闭后残留任务仍会广播或清物
     public void close() {
-        for (BukkitTask task : pendingTasks) {
+        for (BukkitRunnable task : pendingTasks) {
             task.cancel();
         }
         pendingTasks.clear();

@@ -6,8 +6,6 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +18,7 @@ import java.util.List;
 public class AnimalClean extends BukkitRunnable {
     private final JavaPlugin plugin; // 插件实例，用于调度倒计时任务
     private final int countdownTime; // 倒计时时间（秒）
-    private final List<BukkitTask> pendingTasks = new ArrayList<>(); // 延迟中的任务，插件卸载时统一取消
+    private final List<BukkitRunnable> pendingTasks = new ArrayList<>(); // 延迟中的任务，插件卸载时统一取消
 
     public AnimalClean(JavaPlugin plugin, int countdownSeconds) {
         this.plugin = plugin;
@@ -66,7 +64,7 @@ public class AnimalClean extends BukkitRunnable {
 
     // 插件卸载/重载时取消延迟中的通告和清理，避免关闭后残留任务仍会广播或清物
     public void close() {
-        for (BukkitTask task : pendingTasks) {
+        for (BukkitRunnable task : pendingTasks) {
             task.cancel();
         }
         pendingTasks.clear();
