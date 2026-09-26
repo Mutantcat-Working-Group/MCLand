@@ -21,7 +21,7 @@ public class HelpCommand implements CommandExecutor {
         sender.sendMessage(PREFIX + "/tp 玩家名 - 向对方发送传送请求，对方 /accept 接受");
         sender.sendMessage(PREFIX + "/accept - 接受收到的传送请求");
         sender.sendMessage(PREFIX + "/money - 查看金币余额");
-        sender.sendMessage(PREFIX + "/money send 数量 玩家名 - 转帐金币给他人，对方可不在线");
+        sender.sendMessage(PREFIX + "/money give 数量 玩家名 - 转帐金币给他人，对方可不在线");
         sender.sendMessage(PREFIX + "/request 数量 玩家名 - 向在线玩家索要金币，对方在30秒内/accept且余额充足后到账");
         sender.sendMessage(PREFIX + "/spawn - 返回主城出生点");
         sender.sendMessage(PREFIX + "/sethome - 把当前位置设为 home");

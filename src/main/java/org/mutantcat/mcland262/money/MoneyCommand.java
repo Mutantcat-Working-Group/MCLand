@@ -16,7 +16,7 @@ import java.util.UUID;
 import java.util.logging.Level;
 
 /**
- * 金币命令：/money 查余额，/money send 数量 玩家名 转账，/request 数量 玩家名 向在线玩家索要。
+ * 金币命令：/money 查余额，/money give 数量 玩家名 转账，/request 数量 玩家名 向在线玩家索要。
  * 金币与账号绑定，读写都落在登录库 users 表的 balance 列。
  */
 public class MoneyCommand implements CommandExecutor {
@@ -66,15 +66,15 @@ public class MoneyCommand implements CommandExecutor {
             showBalance(player);
             return;
         }
-        if (args[0].equalsIgnoreCase("send")) {
+        if (args[0].equalsIgnoreCase("give")) {
             if (args.length != 3) {
-                player.sendMessage(PREFIX + "请输入“/money send 数量 玩家名”向他人转帐金币，对方可不在线，玩家名前可带@");
+                player.sendMessage(PREFIX + "请输入“/money give 数量 玩家名”向他人转帐金币，对方可不在线，玩家名前可带@");
                 return;
             }
-            sendMoney(player, args[1], args[2]);
+            giveMoney(player, args[1], args[2]);
             return;
         }
-        player.sendMessage(PREFIX + "未知用法。/money 查看余额；“/money send 数量 玩家名”转帐；“/request 数量 玩家名”向在线玩家索要");
+        player.sendMessage(PREFIX + "未知用法。/money 查看余额；“/money give 数量 玩家名”转帐；“/request 数量 玩家名”向在线玩家索要");
     }
 
     private void handleRequest(Player player, String[] args) {
@@ -135,7 +135,7 @@ public class MoneyCommand implements CommandExecutor {
     }
 
     /** 转账：校验数量、账号、余额后走数据库事务，对方在线则顺带通知一声 */
-    private void sendMoney(Player player, String amountArg, String targetArg) {
+    private void giveMoney(Player player, String amountArg, String targetArg) {
         long amount;
         try {
             amount = Long.parseLong(amountArg.trim());
@@ -149,7 +149,7 @@ public class MoneyCommand implements CommandExecutor {
         }
         String targetName = stripAt(targetArg);
         if (targetName.isEmpty()) {
-            player.sendMessage(PREFIX + "请输入“/money send 数量 玩家名”向他人转帐金币，玩家名前可带@");
+            player.sendMessage(PREFIX + "请输入“/money give 数量 玩家名”向他人转帐金币，玩家名前可带@");
             return;
         }
 
