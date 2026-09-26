@@ -53,7 +53,7 @@ public class EntityClean extends BukkitRunnable {
             @Override
             public void run() {
                 pendingTasks.remove(this);
-                Bukkit.broadcastMessage("[掉落物清理]距离下次掉落物清理还差" + left + "，请注意拾取");
+                Bukkit.broadcastMessage("[掉落物清理]距离下次掉落物清理还差" + left + "秒，请注意拾取");
             }
         };
         pendingTasks.add(announcer);
