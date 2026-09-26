@@ -10,6 +10,10 @@ import org.mutantcat.mcland263.event.player.NoDropOnDeathEvent;
 import org.mutantcat.mcland263.event.player.PlayerJoinedEvent;
 import org.mutantcat.mcland263.timer.entity.AnimalClean;
 import org.mutantcat.mcland263.timer.entity.EntityClean;
+import org.mutantcat.mcland263.teleport.AcceptCommand;
+import org.mutantcat.mcland263.teleport.TeleportCommand;
+import org.mutantcat.mcland263.teleport.TeleportListener;
+import org.mutantcat.mcland263.teleport.TeleportRequestManager;
 import org.mutantcat.mcland263.user.AuthCommand;
 import org.mutantcat.mcland263.user.AuthListener;
 import org.mutantcat.mcland263.user.AuthManager;
@@ -24,6 +28,7 @@ public class Main extends JavaPlugin {
     // 记录注册的定时任务，便于卸载时统一取消
     private final List<BukkitTask> tasks = new ArrayList<>();
     private AuthManager authManager;
+    private TeleportRequestManager teleportManager;
 
     @Override
     public void onEnable() {
@@ -49,6 +54,12 @@ public class Main extends JavaPlugin {
         } catch (SQLException e) {
             getLogger().log(Level.SEVERE, "用户数据库初始化失败，注册/登录功能未启用", e);
         }
+
+        // 玩家传送请求（/tp 发起，/accept 接受）
+        teleportManager = new TeleportRequestManager(this, authManager);
+        getServer().getPluginManager().registerEvents(new TeleportListener(teleportManager), this);
+        getCommand("tp").setExecutor(new TeleportCommand(teleportManager));
+        getCommand("accept").setExecutor(new AcceptCommand(teleportManager));
 
         // 主城保护（世界不存在时跳过并告警，避免 NPE）
         String worldName = getConfig().getString("spawn-protection.world", "world");
@@ -79,6 +90,9 @@ public class Main extends JavaPlugin {
             task.cancel();
         }
         tasks.clear();
+        if (teleportManager != null) {
+            teleportManager.close();
+        }
         if (authManager != null) {
             try {
                 authManager.close();
