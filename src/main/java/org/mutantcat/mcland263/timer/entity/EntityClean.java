@@ -40,7 +40,7 @@ public class EntityClean extends BukkitRunnable {
                 pendingTasks.remove(this);
                 Bukkit.getWorlds().forEach(world ->
                         world.getEntitiesByClasses(Item.class).forEach(Entity::remove));
-                Bukkit.broadcastMessage("掉落物已被清除。");
+                Bukkit.broadcastMessage("[掉落物清理]掉落物已被清除。");
             }
         };
         pendingTasks.add(cleanup);

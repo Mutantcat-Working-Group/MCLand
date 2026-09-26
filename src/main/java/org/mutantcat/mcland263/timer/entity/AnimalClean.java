@@ -36,7 +36,7 @@ public class AnimalClean extends BukkitRunnable {
                 public void run() {
                     pendingTasks.remove(this);
                     for (Player player : Bukkit.getOnlinePlayers()) {
-                        player.sendMessage("注意：全世界生物将在 " + secondsLeft + " 秒后被清除！");
+                        player.sendMessage("[生物清理]注意：全世界生物将在 " + secondsLeft + " 秒后被清除！");
                     }
                 }
             };
@@ -55,7 +55,7 @@ public class AnimalClean extends BukkitRunnable {
                         }
                     }
                 });
-                Bukkit.broadcastMessage("生物已被清除。");
+                Bukkit.broadcastMessage("[生物清理]生物已被清除。");
             }
         };
         pendingTasks.add(cleanup);
