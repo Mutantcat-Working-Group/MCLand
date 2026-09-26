@@ -1,6 +1,6 @@
 package org.mutantcat.mcland262.land;
 
-import org.bukkit.EquipmentSlot;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
