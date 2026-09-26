@@ -22,12 +22,17 @@ import java.util.UUID;
  * 用户账号 SQLite 存储，固定写入 plugins/MCLand/MCLand/user/user.db。
  */
 public class UserDatabase implements AutoCloseable {
-    /** 新注册账号默认赠送的金币数量 */
+    /**
+     * 新注册账号赠送金币的兜底值：配置没写 auth.default-balance 时用它，也是建表时的列默认值。
+     */
     public static final long DEFAULT_BALANCE = 500L;
 
     private final Connection connection;
+    /** 新注册账号实际赠送的金币数量，由配置 auth.default-balance 决定 */
+    private final long startingBalance;
 
-    public UserDatabase(JavaPlugin plugin) throws SQLException {
+    public UserDatabase(JavaPlugin plugin, long startingBalance) throws SQLException {
+        this.startingBalance = startingBalance;
         File dbFile = new File(plugin.getDataFolder(), "MCLand/user/user.db");
         File parentDir = dbFile.getParentFile();
         if (!parentDir.exists() && !parentDir.mkdirs()) {
@@ -104,7 +109,7 @@ public class UserDatabase implements AutoCloseable {
             statement.setString(1, uuid.toString());
             statement.setString(2, username);
             statement.setString(3, md5(password));
-            statement.setLong(4, DEFAULT_BALANCE);
+            statement.setLong(4, startingBalance);
             statement.setLong(5, now);
             statement.setLong(6, now);
             statement.executeUpdate();

@@ -41,8 +41,15 @@ animal-clean:
   # 每个网格内同种动物的上限，超出部分被移除
   max-per-type-per-grid: 2
 
+# ===== 玩家传送请求 =====
+teleport:
+  # /tp 发起的请求，目标玩家需在这么多秒内 /accept 接受，超时自动取消
+  request-timeout-seconds: 30
+
 # ===== 注册登录 =====
 auth:
+  # 新注册账号赠送的金币数量（金币与账号绑定，与余额上限无关）
+  default-balance: 500
   # 基岩版缓存登录：经间歇泉进来的基岩版玩家，缓存有效期内同一 IP 再次进服可免去手动 /login
   bedrock-session:
     enabled: true

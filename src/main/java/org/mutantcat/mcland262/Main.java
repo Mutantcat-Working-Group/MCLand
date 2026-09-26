@@ -10,6 +10,7 @@ import org.mutantcat.mcland262.checkin.CheckinCommand;
 import org.mutantcat.mcland262.event.block.SpawnProtectionListener;
 import org.mutantcat.mcland262.event.player.NoDropOnDeathEvent;
 import org.mutantcat.mcland262.event.player.PlayerJoinedEvent;
+import org.mutantcat.mcland262.help.HelpCommand;
 import org.mutantcat.mcland262.help.HelpListener;
 import org.mutantcat.mcland262.land.LandCommand;
 import org.mutantcat.mcland262.land.LandListener;
@@ -68,7 +69,8 @@ public class Main extends JavaPlugin {
 
         // 注册/登录功能（SQLite 用户库初始化失败时仅告警，不影响其余功能）
         try {
-            userDatabase = new UserDatabase(this);
+            userDatabase = new UserDatabase(this,
+                    Math.max(0L, getConfig().getLong("auth.default-balance", 500L)));
             authManager = new AuthManager(userDatabase, getLogger(),
                     getConfig().getBoolean("auth.bedrock-session.enabled", true),
                     getConfig().getLong("auth.bedrock-session.window-minutes", 60L));
@@ -83,7 +85,8 @@ public class Main extends JavaPlugin {
         }
 
         // 玩家传送请求（/tp 发起，/accept 接受）
-        teleportManager = new TeleportRequestManager(this, authManager, userDatabase);
+        teleportManager = new TeleportRequestManager(this, authManager, userDatabase,
+                Math.max(1, getConfig().getInt("teleport.request-timeout-seconds", 30)));
         getServer().getPluginManager().registerEvents(new TeleportListener(teleportManager), this);
         getCommand("tp").setExecutor(new TeleportCommand(teleportManager));
         getCommand("accept").setExecutor(new AcceptCommand(teleportManager));
@@ -102,16 +105,26 @@ public class Main extends JavaPlugin {
         getLogger().info("整点红包已启用（奇数整点发放，/red 每轮随机抢 1-10 金币，一小时内有效）");
 
         // 每日签到（/check 每个账号每天一次，奖励入账到账号余额），与账号库同库；用户库未启用时跳过
+        long checkinReward = Math.max(1L, getConfig().getLong("checkin.reward-coins", 1000L));
         if (userDatabase == null || authManager == null) {
             getLogger().warning("用户数据库或登录系统未启用，每日签到未启用");
         } else {
-            long checkinReward = Math.max(1L, getConfig().getLong("checkin.reward-coins", 1000L));
             getCommand("check").setExecutor(new CheckinCommand(this, authManager, userDatabase, checkinReward));
             getLogger().info("每日签到已启用（/check 每个账号每天一次，奖励 " + checkinReward + " 金币）");
         }
 
         // /help 帮助菜单：由 HelpListener 在命令预处理阶段拦截输出，不注册 /help 命令，避免与服务器内置命令冲突
-        getServer().getPluginManager().registerEvents(new HelpListener(), this);
+        // 文案里的数值全部来自配置（checkin 奖励、圈地单价与最小边长、清理间隔、请求有效期、注册赠送金币），
+        // 配置与文案不会各说各话；数值由 HelpCommand.Info 一次注入，命令和拦截器共用同一份
+        HelpCommand helpCommand = new HelpCommand(new HelpCommand.Info(
+                checkinReward,
+                Math.max(1L, getConfig().getLong("land.price-per-block", 1000L)),
+                Math.max(1, getConfig().getInt("land.min-side-blocks", 5)),
+                Math.max(1L, getConfig().getLong("item-clean.interval-seconds", 900L)),
+                Math.max(1L, getConfig().getLong("animal-clean.interval-seconds", 3600L)),
+                Math.max(1, getConfig().getInt("teleport.request-timeout-seconds", 30)),
+                Math.max(0L, getConfig().getLong("auth.default-balance", 500L))));
+        getServer().getPluginManager().registerEvents(new HelpListener(helpCommand), this);
 
         // 主城保护（世界不存在时跳过并告警，避免 NPE）
         String worldName = getConfig().getString("spawn-protection.world", "world");

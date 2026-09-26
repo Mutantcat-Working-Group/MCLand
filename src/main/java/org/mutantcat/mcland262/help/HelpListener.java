@@ -5,6 +5,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
 public class HelpListener implements Listener {
+    private final HelpCommand helpCommand;
+
+    public HelpListener(HelpCommand helpCommand) {
+        this.helpCommand = helpCommand;
+    }
+
     @EventHandler(ignoreCancelled = true)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
         if (event.isCancelled()) {
@@ -15,6 +21,6 @@ public class HelpListener implements Listener {
             return;
         }
         event.setCancelled(true);
-        HelpCommand.sendHelp(event.getPlayer());
+        helpCommand.sendHelp(event.getPlayer());
     }
 }

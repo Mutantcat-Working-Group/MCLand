@@ -14,12 +14,11 @@ import java.util.UUID;
 import java.util.logging.Level;
 
 /**
- * 玩家传送请求：/tp 发起，30 秒内由目标玩家 /accept 接受。
+ * 玩家传送请求：/tp 发起，目标玩家在请求有效期内 /accept 接受，有效期由配置决定。
  */
 public class TeleportRequestManager {
     private static final String PREFIX = "[TP]";
     private static final String PREFIX_MONEY = "[交易系统]";
-    private static final long REQUEST_TIMEOUT_TICKS = 30L * 20L;
 
     /** 请求类型：传送在 /accept 时直接飞过去，金币索要在 /accept 时按类型执行转账 */
     private enum Kind { TP, MONEY }
@@ -28,11 +27,18 @@ public class TeleportRequestManager {
     private final AuthManager authManager;
     private final UserDatabase userDatabase;
     private final Map<UUID, PendingRequest> requests = new HashMap<>();
+    /** 请求有效期（ticks），由配置秒数换算而来 */
+    private final long requestTimeoutTicks;
+    /** 请求有效期（秒），提示文案直接用，保证文案说的和实际超时一致 */
+    private final int requestTimeoutSeconds;
 
-    public TeleportRequestManager(JavaPlugin plugin, AuthManager authManager, UserDatabase userDatabase) {
+    public TeleportRequestManager(JavaPlugin plugin, AuthManager authManager, UserDatabase userDatabase,
+                                  int requestTimeoutSeconds) {
         this.plugin = plugin;
         this.authManager = authManager;
         this.userDatabase = userDatabase;
+        this.requestTimeoutSeconds = requestTimeoutSeconds;
+        this.requestTimeoutTicks = requestTimeoutSeconds * 20L;
     }
 
     public void handleTpCommand(Player player, String[] args) {
@@ -64,7 +70,8 @@ public class TeleportRequestManager {
             return;
         }
         submit(requester, target, Kind.TP, 0);
-        target.sendMessage(PREFIX + "用户" + requester.getName() + "想要传送到你身边，在30秒内输入/accept接受");
+        target.sendMessage(PREFIX + "用户" + requester.getName() + "想要传送到你身边，在"
+                + requestTimeoutSeconds + "秒内输入/accept接受");
         requester.sendMessage(PREFIX + "已向" + target.getName() + "发送传送请求，等待对方接受");
     }
 
@@ -83,11 +90,12 @@ public class TeleportRequestManager {
             return;
         }
         submit(requester, target, Kind.MONEY, amount);
-        target.sendMessage(PREFIX_MONEY + "用户" + requester.getName() + "想要向你索要" + amount + "金币，在30秒内输入/accept接受");
+        target.sendMessage(PREFIX_MONEY + "用户" + requester.getName() + "想要向你索要" + amount + "金币，在"
+                + requestTimeoutSeconds + "秒内输入/accept接受");
         requester.sendMessage(PREFIX_MONEY + "已向" + target.getName() + "发送索要" + amount + "金币的请求，等待对方接受");
     }
 
-    /** 覆盖目标玩家的旧请求，登记新的待处理请求并挂 30 秒过期任务 */
+    /** 覆盖目标玩家的旧请求，登记新的待处理请求并挂过期任务 */
     private void submit(Player requester, Player target, Kind kind, long amount) {
         PendingRequest old = requests.remove(target.getUniqueId());
         if (old != null) {
@@ -95,7 +103,7 @@ public class TeleportRequestManager {
         }
         PendingRequest pending = new PendingRequest(requester, target, kind, amount);
         BukkitTask task = Bukkit.getScheduler().runTaskLater(plugin,
-                () -> expire(target.getUniqueId(), requester.getUniqueId()), REQUEST_TIMEOUT_TICKS);
+                () -> expire(target.getUniqueId(), requester.getUniqueId()), requestTimeoutTicks);
         pending.expiryTask = task;
         requests.put(target.getUniqueId(), pending);
     }
