@@ -12,7 +12,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashSet;
 import java.util.HexFormat;
+import java.util.Locale;
 import java.util.UUID;
 
 /**
@@ -41,6 +43,26 @@ public class UserDatabase implements AutoCloseable {
                     "password_md5 TEXT NOT NULL," +
                     "created_at INTEGER NOT NULL," +
                     "updated_at INTEGER NOT NULL)");
+            ensureSessionColumns(statement);
+        }
+    }
+
+    /**
+     * 老库补列：基岩版缓存登录的时间和 IP 各占一列。
+     * SQLite 的 ALTER TABLE 不支持 IF NOT EXISTS，先查 PRAGMA table_info 再补，重复启动不会报错。
+     */
+    private void ensureSessionColumns(Statement statement) throws SQLException {
+        Set<String> columns = new HashSet<>();
+        try (ResultSet result = statement.executeQuery("PRAGMA table_info(users)")) {
+            while (result.next()) {
+                columns.add(result.getString("name").toLowerCase(Locale.ROOT));
+            }
+        }
+        if (!columns.contains("bedrock_login_at")) {
+            statement.executeUpdate("ALTER TABLE users ADD COLUMN bedrock_login_at INTEGER");
+        }
+        if (!columns.contains("bedrock_login_ip")) {
+            statement.executeUpdate("ALTER TABLE users ADD COLUMN bedrock_login_ip TEXT");
         }
     }
 
@@ -86,6 +108,42 @@ public class UserDatabase implements AutoCloseable {
             statement.executeUpdate();
         }
     }
+
+    /** 基岩版缓存的登录记录；没注册、没记录过或 IP 为空都返回 null */
+    public BedrockSession findBedrockSession(UUID uuid) throws SQLException {
+        try (PreparedStatement statement = connection.prepareStatement(
+                "SELECT bedrock_login_at, bedrock_login_ip FROM users WHERE uuid = ?")) {
+            statement.setString(1, uuid.toString());
+            try (ResultSet result = statement.executeQuery()) {
+                if (!result.next()) {
+                    return null;
+                }
+                long loginAt = result.getLong(1);
+                if (result.wasNull()) {
+                    return null;
+                }
+                String ip = result.getString(2);
+                if (ip == null || ip.isEmpty()) {
+                    return null;
+                }
+                return new BedrockSession(loginAt, ip);
+            }
+        }
+    }
+
+    /** 记下这次成功登录的时间和服务端看到的 IP，供下次进服比对 */
+    public void updateBedrockSession(UUID uuid, long loginAt, String ip) throws SQLException {
+        try (PreparedStatement statement = connection.prepareStatement(
+                "UPDATE users SET bedrock_login_at = ?, bedrock_login_ip = ? WHERE uuid = ?")) {
+            statement.setLong(1, loginAt);
+            statement.setString(2, ip);
+            statement.setString(3, uuid.toString());
+            statement.executeUpdate();
+        }
+    }
+
+    /** 基岩版缓存登录：上次成功登录的时刻与服务端看到的连接 IP */
+    public record BedrockSession(long loginAt, String ip) {}
 
     public static String md5(String text) {
         try {

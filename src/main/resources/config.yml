@@ -41,6 +41,14 @@ animal-clean:
   # 每个网格内同种动物的上限，超出部分被移除
   max-per-type-per-grid: 2
 
+# ===== 注册登录 =====
+auth:
+  # 基岩版缓存登录：经间歇泉进来的基岩版玩家，缓存有效期内同一 IP 再次进服可免去手动 /login
+  bedrock-session:
+    enabled: true
+    # 缓存有效时长（分钟），从上次成功登录那一刻算起
+    window-minutes: 60
+
 # ===== 其他 =====
 # 进服欢迎语（留空则不发送）
 welcome-message: "[MCLand]欢迎来到方块猫窝！"

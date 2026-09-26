@@ -56,12 +56,15 @@ public class Main extends JavaPlugin {
         // 注册/登录功能（SQLite 用户库初始化失败时仅告警，不影响其余功能）
         try {
             UserDatabase userDatabase = new UserDatabase(this);
-            authManager = new AuthManager(userDatabase, getLogger());
+            authManager = new AuthManager(userDatabase, getLogger(),
+                    getConfig().getBoolean("auth.bedrock-session.enabled", true),
+                    getConfig().getLong("auth.bedrock-session.window-minutes", 60L));
             getServer().getPluginManager().registerEvents(new AuthListener(this, authManager), this);
             getCommand("register").setExecutor(new AuthCommand(authManager));
             getCommand("login").setExecutor(new AuthCommand(authManager));
             getCommand("password").setExecutor(new AuthCommand(authManager));
-            getLogger().info("用户注册/登录功能已启用（SQLite）");
+            getLogger().info("用户注册/登录功能已启用（SQLite；基岩版缓存登录 " +
+                    getConfig().getLong("auth.bedrock-session.window-minutes", 60L) + " 分钟内同 IP 免密，Java 版照旧每次登录）");
         } catch (SQLException e) {
             getLogger().log(Level.SEVERE, "用户数据库初始化失败，注册/登录功能未启用", e);
         }

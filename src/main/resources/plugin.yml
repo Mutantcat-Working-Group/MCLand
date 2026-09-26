@@ -1,8 +1,10 @@
 name: MCLand
-version: 26.2.20260929
+version: 26.2.20260930
 main: org.mutantcat.mcland262.Main
 api-version: 26.2
 author: Mutantcat Working Group
+softdepend:
+  - floodgate
 description: 方块猫窝公益服插件（主城保护与能量墙/死亡不掉落/定期清理/注册登录/传送请求/回城与home/帮助菜单）
 commands:
   register:

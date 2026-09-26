@@ -36,6 +36,11 @@ public class AuthListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         if (authManager.isRegistered(player.getUniqueId())) {
+            // 基岩版走缓存：缓存有效期内同一 IP 进服直接放过，不用再输密码
+            if (authManager.tryBedrockAutoLogin(player)) {
+                player.sendMessage(PREFIX + "检测到本 IP 近期已登录，已自动登录，欢迎回来！");
+                return;
+            }
             player.sendMessage(PREFIX + "请输入“/login 密码”登录当前用户名的账号");
         } else {
             player.sendMessage(PREFIX + "请输入“/register 密码 确认密码”注册当前用户名的密码");

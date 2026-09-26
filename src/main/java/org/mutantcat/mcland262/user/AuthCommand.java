@@ -46,6 +46,7 @@ public class AuthCommand implements CommandExecutor {
             return;
         }
         if (authManager.register(player.getUniqueId(), player.getName(), args[0])) {
+            authManager.refreshBedrockSession(player);
             player.sendMessage(PREFIX + "注册成功，欢迎来到方块猫窝！");
             player.sendMessage(PREFIX + "如需修改密码，请输入“/password 密码 确认密码”");
         } else {
@@ -67,6 +68,8 @@ public class AuthCommand implements CommandExecutor {
             return;
         }
         if (authManager.login(player.getUniqueId(), args[0])) {
+            // 记下这次登录的时间和 IP，基岩版下次同 IP 进服才能免密
+            authManager.refreshBedrockSession(player);
             player.sendMessage(PREFIX + "登录成功，欢迎回来！");
             player.sendMessage(PREFIX + "如需修改密码，请输入“/password 密码 确认密码”");
         } else {
