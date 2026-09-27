@@ -13,7 +13,8 @@ public class HelpCommand implements CommandExecutor {
      */
     public record Info(long checkinRewardCoins, long landPricePerBlock, int landMinSide,
                        long itemCleanIntervalSeconds, long animalCleanIntervalSeconds,
-                       int tpRequestTimeoutSeconds, long startingBalance) {
+                       int tpRequestTimeoutSeconds, long startingBalance,
+                       long randomMaxDistanceBlocks) {
     }
 
     private final Info info;
@@ -46,6 +47,7 @@ public class HelpCommand implements CommandExecutor {
         sender.sendMessage(PREFIX + "/spawn - 返回主城出生点");
         sender.sendMessage(PREFIX + "/sethome - 把当前位置设为 home");
         sender.sendMessage(PREFIX + "/home - 返回自己设置的 home");
+        sender.sendMessage(PREFIX + "/random - 随机传送到附近安全地面（最远" + info.randomMaxDistanceBlocks() + "格，落点排除水面、天空、方块内、水中与岩浆）");
         sender.sendMessage(PREFIX + "/land - 木铲右键选点圈地：先选第一个点，输 /land 确认后选第二个点（可更换）");
         sender.sendMessage(PREFIX + "/land sum - 查看所选区域的两点坐标、大小、价格与当前余额");
         sender.sendMessage(PREFIX + "/land sure - 确认购买所选区域，扣除对应金币");

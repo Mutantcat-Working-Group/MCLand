@@ -1,5 +1,5 @@
 name: MCLand
-version: 26.2.20261010
+version: 26.2.20261011
 main: org.mutantcat.mcland262.Main
 api-version: 26.2
 author: Mutantcat Working Group
@@ -22,6 +22,9 @@ commands:
   accept:
     description: 接受收到的传送请求
     usage: /accept
+  random:
+    description: 随机传送到附近安全地面（排除水面、天空、方块内、水中与岩浆）
+    usage: /random
   money:
     description: 查看金币余额，/money give 转帐金币给他人（对方可不在线），/money request 向在线玩家索要
     usage: /money | /money give 数量 玩家名 | /money request 数量 玩家名

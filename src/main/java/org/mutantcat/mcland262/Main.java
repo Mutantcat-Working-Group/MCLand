@@ -22,6 +22,7 @@ import org.mutantcat.mcland262.home.HomeManager;
 import org.mutantcat.mcland262.money.MoneyCommand;
 import org.mutantcat.mcland262.redpacket.RedCommand;
 import org.mutantcat.mcland262.redpacket.RedPacketManager;
+import org.mutantcat.mcland262.randomtp.RandomTeleportCommand;
 import org.mutantcat.mcland262.spawn.SpawnCommand;
 import org.mutantcat.mcland262.spawn.SpawnGuardTask;
 import org.mutantcat.mcland262.spawn.SpawnRegion;
@@ -91,6 +92,14 @@ public class Main extends JavaPlugin {
         getCommand("tp").setExecutor(new TeleportCommand(teleportManager));
         getCommand("accept").setExecutor(new AcceptCommand(teleportManager));
 
+        // 随机传送（/random 以玩家为圆心随机安全落点，未登录由命令内按账号系统拦截）
+        int randomMinDistance = Math.max(0, getConfig().getInt("random-teleport.min-distance-blocks", 100));
+        int randomMaxDistance = Math.max(1, getConfig().getInt("random-teleport.max-distance-blocks", 500));
+        int randomMaxAttempts = Math.max(1, getConfig().getInt("random-teleport.max-attempts", 32));
+        getCommand("random").setExecutor(new RandomTeleportCommand(authManager,
+                randomMinDistance, randomMaxDistance, randomMaxAttempts));
+        getLogger().info("随机传送已启用（/random，以玩家为圆心最远 " + randomMaxDistance + " 格内随机安全落点）");
+
         // 金币系统（/money 查余额与转账、/money request 索要），与账号库同库，金币跟账号绑定
         getCommand("money").setExecutor(new MoneyCommand(this, authManager, teleportManager, userDatabase));
 
@@ -122,7 +131,8 @@ public class Main extends JavaPlugin {
                 Math.max(1L, getConfig().getLong("item-clean.interval-seconds", 900L)),
                 Math.max(1L, getConfig().getLong("animal-clean.interval-seconds", 3600L)),
                 Math.max(1, getConfig().getInt("teleport.request-timeout-seconds", 30)),
-                Math.max(0L, getConfig().getLong("auth.default-balance", 500L))));
+                Math.max(0L, getConfig().getLong("auth.default-balance", 500L)),
+                randomMaxDistance));
         getServer().getPluginManager().registerEvents(new HelpListener(helpCommand), this);
 
         // 主城保护（世界不存在时跳过并告警，避免 NPE）
