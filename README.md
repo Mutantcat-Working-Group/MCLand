@@ -25,7 +25,7 @@
 | `main` | 1.21 | `1.21.20260810` | 活跃开发 |
 | `mc-1.10` | 1.10 | `1.0.20260920` | 已终结 |
 | `mc-26.3` | 26.3 | `26.3.20260929` | 开发中 |
-| `mc-26.2` | 26.2 | `26.2.20261011` | 开发中 |
+| `mc-26.2` | 26.2 | `26.2.20261012` | 开发中 |
 
 ### 三、注意事项
 
@@ -47,7 +47,7 @@
 - 回城与 home（`/spawn` 返回主城，`/sethome` 设置 home，`/home` 返回 home，位置存于 `user.db`）
 - 随机传送（`/random` 以玩家当前位置为圆心随机传送，默认 100-500 格；落点必须是露天开阔地带的地表：脚下实心、身体两格可站立、头顶天空通透，矿洞、封闭空间与茂密树冠下不作数，另排除水面、天空、方块内、水中、岩浆及仙人掌、岩浆块、营火等会伤人的方块；范围与尝试次数由配置 `random-teleport` 决定）
 - 用户注册/登录（`/register`、`/login`、`/password`，SQLite 存储 MD5 密码；未登录玩家仅允许使用 `/register` 和 `/login`，其余命令、聊天和操作会被限制）
-- 基岩版缓存登录：经间歇泉进来的基岩版玩家，缓存有效期内同一 IP 再次进服自动登录，不用重复输密码（默认 60 分钟，配置 `auth.bedrock-session`）；Java 版仍每次进服都要 `/login`，IP 变化或超过有效期同样要重新登录
+- 基岩版缓存登录：经间歇泉进来的基岩版玩家，缓存有效期内同一 IP 再次进服自动登录，不用重复输密码（默认 60 分钟，配置 `auth.bedrock-session`）；Java 版仍每次进服都要 `/login`，IP 变化或超过有效期同样要重新登录；进服 60 秒内未登录会被自动踢出，时长由配置 `auth.login-timeout-seconds` 决定
 - 玩家传送请求（`/tp 玩家名` 发起，目标玩家 `/accept` 接受，30 秒内有效，有效期由配置 `teleport.request-timeout-seconds` 决定；管理员保留官方 `/tp` 直接传送）
 - 金币系统（`/money` 查余额；`/money give 数量 玩家名` 转帐，对方可不在线且需余额充足；`/money request 数量 玩家名` 向在线玩家索要，对方在 30 秒内 `/accept` 且余额充足后到账；金币与账号绑定，新注册默认 500（配置 `auth.default-balance`），SQLite 存储）
 - 交易系统（`/sell` 查看可出售物品与单价；`/sell sum` 计算当前手中物品总价；`/sell sure` 卖掉当前手中的物品换取金币，金币跟账号绑定；先入账后收物品，卖出后无法赎回；手中为空或不支持的物品会提示“此商品不支持出售”）
@@ -75,6 +75,7 @@
 | `auth.default-balance` | `500` | 新注册账号赠送的金币数量 |
 | `auth.bedrock-session.enabled` | `true` | 基岩版缓存登录开关 |
 | `auth.bedrock-session.window-minutes` | `60` | 基岩版缓存有效期（分钟），同 IP 免密 |
+| `auth.login-timeout-seconds` | `60` | 进服后超时未登录踢出服务器的秒数，设为 0 关闭 |
 | `checkin.reward-coins` | `1000` | 每日签到奖励的金币数量 |
 | `teleport.request-timeout-seconds` | `30` | `/tp` 与金币索要请求的有效期（秒） |
 | `random-teleport.min-distance-blocks` | `100` | `/random` 随机传送的最小水平距离（格） |

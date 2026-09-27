@@ -75,10 +75,15 @@ public class Main extends JavaPlugin {
             authManager = new AuthManager(userDatabase, getLogger(),
                     getConfig().getBoolean("auth.bedrock-session.enabled", true),
                     getConfig().getLong("auth.bedrock-session.window-minutes", 60L));
-            getServer().getPluginManager().registerEvents(new AuthListener(this, authManager), this);
+            long loginTimeoutSeconds = Math.max(0L, getConfig().getLong("auth.login-timeout-seconds", 60L));
+            getServer().getPluginManager().registerEvents(
+                    new AuthListener(this, authManager, loginTimeoutSeconds), this);
             getCommand("register").setExecutor(new AuthCommand(authManager));
             getCommand("login").setExecutor(new AuthCommand(authManager));
             getCommand("password").setExecutor(new AuthCommand(authManager));
+            if (loginTimeoutSeconds > 0) {
+                getLogger().info("登录超时踢出已启用（进服 " + loginTimeoutSeconds + " 秒未登录将被踢出）");
+            }
             getLogger().info("用户注册/登录功能已启用（SQLite；基岩版缓存登录 " +
                     getConfig().getLong("auth.bedrock-session.window-minutes", 60L) + " 分钟内同 IP 免密，Java 版照旧每次登录）");
         } catch (SQLException e) {
